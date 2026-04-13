@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obligaciones - SMGC | Cuestionario Interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --surface: #ffffff;
+    --surface2: #eef1f5;
+    --text-primary: #1a1f2e;
+    --text-secondary: #5a6072;
+    --text-muted: #9099af;
+    --accent: #4a7fa5;
+    --accent-light: #c8dcea;
+    --accent-dim: #deeaf3;
+    --correct: #2e7d5e;
+    --correct-light: #d4ede4;
+    --incorrect: #c0392b;
+    --incorrect-light: #fae5e3;
+    --border: #dde1e9;
+    --radius: 14px;
+    --shadow: 0 2px 18px rgba(74,127,165,0.10);
+    --shadow-hover: 0 6px 28px rgba(74,127,165,0.18);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.05);
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+  }
+  .header-sub {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.3px;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .score-badge {
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 50px;
+    display: none;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    position: sticky;
+    top: 70px;
+    z-index: 99;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #6fa8c5);
+    transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    width: 0%;
+  }
+
+  /* ── MAIN ── */
+  main {
+    width: 100%;
+    max-width: 780px;
+    padding: 32px 20px 60px;
+  }
+
+  /* ── MENU ── */
+  #menu-screen {
+    display: block;
+  }
+  .menu-hero {
+    text-align: center;
+    padding: 48px 0 40px;
+  }
+  .menu-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .menu-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .menu-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+  .module-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  @media(max-width:560px){ .module-grid { grid-template-columns: 1fr; } }
+  .module-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 26px 24px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .module-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), #6fa8c5);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .module-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .module-card:hover::before { transform: scaleX(1); }
+  .module-number {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+  }
+  .module-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .module-meta {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .module-progress-bar {
+    margin-top: 12px;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .module-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .module-score-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz-screen { display: none; }
+  .quiz-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .btn-back {
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+  .quiz-info {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .quiz-info span { color: var(--accent); font-weight: 600; }
+
+  /* ── QUESTION CARD ── */
+  .question-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 30px;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.28s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .question-counter {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .question-counter::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .question-text {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 26px;
+  }
+  .question-text.long { font-size: 14px; }
+
+  /* ── OPTIONS ── */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: all 0.18s ease;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.55;
+    position: relative;
+    overflow: hidden;
+  }
+  .option-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent-dim);
+    opacity: 0;
+    transition: opacity 0.18s;
+  }
+  .option-btn:hover:not(:disabled)::before { opacity: 1; }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+  }
+  .option-btn:disabled { cursor: default; }
+  .option-letter {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    transition: all 0.18s;
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+  .option-text { position: relative; z-index: 1; padding-top: 2px; }
+
+  /* States after answer */
+  .option-btn.correct {
+    border-color: var(--correct);
+    background: var(--correct-light);
+  }
+  .option-btn.correct .option-letter {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+  .option-btn.correct::before { display: none; }
+  .option-btn.incorrect {
+    border-color: var(--incorrect);
+    background: var(--incorrect-light);
+  }
+  .option-btn.incorrect .option-letter {
+    background: var(--incorrect);
+    border-color: var(--incorrect);
+    color: #fff;
+  }
+  .option-btn.incorrect::before { display: none; }
+  .option-btn.dimmed {
+    opacity: 0.45;
+  }
+  .option-btn.dimmed::before { display: none; }
+
+  /* ── EXPLANATION ── */
+  .explanation-box {
+    margin-top: 20px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #f0f6fb, #e8f2f8);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    animation: fadeIn 0.25s ease;
+  }
+  .explanation-label {
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 5px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── RESULT TAG ── */
+  .result-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+    animation: fadeIn 0.2s ease;
+  }
+  .result-tag.correct-tag { background: var(--correct-light); color: var(--correct); }
+  .result-tag.incorrect-tag { background: var(--incorrect-light); color: var(--incorrect); }
+
+  /* ── NEXT BUTTON ── */
+  .btn-next {
+    margin-top: 24px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    display: none;
+  }
+  .btn-next:hover { background: #3d6d8f; box-shadow: 0 4px 18px rgba(74,127,165,0.3); }
+
+  /* ── RESULTS SCREEN ── */
+  #results-screen { display: none; }
+  .results-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 36px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.3s ease;
+  }
+  .results-emoji { font-size: 48px; margin-bottom: 16px; }
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .results-module-name {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+  }
+  .score-ring-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+  }
+  .score-ring {
+    position: relative;
+    width: 140px;
+    height: 140px;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .score-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+  .score-detail {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+  .score-detail strong { color: var(--text-primary); font-weight: 700; }
+  .results-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .btn-retry, .btn-menu {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-retry {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+  }
+  .btn-retry:hover { background: #3d6d8f; }
+  .btn-menu {
+    background: none;
+    border: 1.5px solid var(--border);
+    color: var(--text-secondary);
+  }
+  .btn-menu:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-title">Obligaciones</div>
+  <div class="header-sub" id="header-sub">SMGC</div>
+  <div class="header-right">
+    <div class="score-badge" id="live-score">0 / 0</div>
+  </div>
+</header>
+<div class="progress-wrap"><div class="progress-fill" id="progress-fill"></div></div>
+
+<main>
+
+<!-- ═══════════════════════════════════ MENU ═══════════════════════════════════ -->
+<div id="menu-screen">
+  <div class="menu-hero">
+    <div class="menu-eyebrow">Cuestionario Interactivo</div>
+    <h1 class="menu-heading">Obligaciones<br><span style="color:var(--accent)">SMGC</span></h1>
+    <p class="menu-subtitle">Seleccioná el ejercitario que querés practicar. Cada respuesta incluye explicación detallada.</p>
+  </div>
+  <div class="module-grid">
+    <div class="module-card" onclick="startQuiz(0)">
+      <div class="module-number">Ejercitario 1</div>
+      <div class="module-name">Hechos, Actos y Vicios del Consentimiento</div>
+      <div class="module-meta">20 preguntas · opciones a, b, c</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="prog-0"></div></div>
+      <div class="module-score-text" id="score-text-0">Sin intentos previos</div>
+    </div>
+    <div class="module-card" onclick="startQuiz(1)">
+      <div class="module-number">Ejercitario 2</div>
+      <div class="module-name">Instrumentos, Representación y Responsabilidad</div>
+      <div class="module-meta">40 preguntas · opciones a, b, c</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="prog-1"></div></div>
+      <div class="module-score-text" id="score-text-1">Sin intentos previos</div>
+    </div>
+    <div class="module-card" onclick="startQuiz(2)">
+      <div class="module-number">Ejercitario 3</div>
+      <div class="module-name">Supuestos Jurídicos, Plazo y Condición</div>
+      <div class="module-meta">20 preguntas · opciones a, b, c, d, e</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="prog-2"></div></div>
+      <div class="module-score-text" id="score-text-2">Sin intentos previos</div>
+    </div>
+    <div class="module-card" onclick="startQuiz(3)">
+      <div class="module-number">Ejercitario 4</div>
+      <div class="module-name">Fuentes, Obligaciones y Responsabilidad Civil</div>
+      <div class="module-meta">53 preguntas · opciones a, b, c, d, e, f</div>
+      <div class="module-progress-bar"><div class="module-progress-fill" id="prog-3"></div></div>
+      <div class="module-score-text" id="score-text-3">Sin intentos previos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ QUIZ ═══════════════════════════════════ -->
+<div id="quiz-screen">
+  <div class="quiz-nav">
+    <button class="btn-back" onclick="goBack()">← Volver</button>
+    <div class="quiz-info">Pregunta <span id="q-current">1</span> de <span id="q-total">20</span></div>
+    <div style="margin-left:auto;font-size:13px;color:var(--text-muted)">✓ <span id="q-correct-count">0</span> correctas</div>
+  </div>
+  <div class="question-card" id="question-card">
+    <div class="question-counter" id="q-counter">Pregunta 1</div>
+    <div class="question-text" id="q-text"></div>
+    <div class="options-list" id="options-list"></div>
+    <div id="feedback-area"></div>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════ RESULTS ═══════════════════════════════════ -->
+<div id="results-screen">
+  <div class="results-card">
+    <div class="results-emoji" id="results-emoji">🎉</div>
+    <div class="results-title" id="results-title">¡Cuestionario completado!</div>
+    <div class="results-module-name" id="results-module-name"></div>
+    <div class="score-ring-wrap">
+      <div class="score-ring">
+        <svg width="140" height="140" viewBox="0 0 140 140">
+          <circle cx="70" cy="70" r="58" fill="none" stroke="#eef1f5" stroke-width="10"/>
+          <circle cx="70" cy="70" r="58" fill="none" stroke="var(--accent)" stroke-width="10"
+            stroke-dasharray="364.4" stroke-dashoffset="364.4"
+            stroke-linecap="round" id="score-circle"/>
+        </svg>
+        <div class="score-ring-text">
+          <div class="score-pct" id="score-pct">0%</div>
+          <div class="score-label">PUNTAJE</div>
+        </div>
+      </div>
+    </div>
+    <p class="score-detail" id="score-detail"></p>
+    <div class="results-actions">
+      <button class="btn-retry" onclick="retryQuiz()">Reintentar</button>
+      <button class="btn-menu" onclick="showMenu()">Menú principal</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ═══════════════════════════ DATA ═══════════════════════════
+
+const modules = [
+
+// ── EJERCITARIO 1 (20 preguntas) ──
+{
+  name: "Ejercitario 1",
+  full: "Hechos, Actos y Vicios del Consentimiento",
+  questions: [
+    {
+      text: "El Sr. Julián Gómez suscribió un contrato de prestación de servicios con la empresa \"Lix S.A.\". El contrato fue firmado por Julián Gómez y por Andrés Ramos, en carácter de representante de la empresa \"Lix S.A.\" ¿Quiénes son los sujetos de la relación contractual?",
+      options: ["El Sr. Julián Gómez, \"Lix S.A.\" y Andrés Ramos.", "El Sr. Julián Gómez y Andrés Ramos.", "El Sr. Julián y la empresa \"Lix S.A.\""],
+      correct: 2,
+      explanation: "Andrés Ramos actúa como representante de la persona jurídica mencionada. Art.344.- Los actos del representado se reputarán como celebrados por el representante, siempre que los ejecutare dentro los límites de sus poderes."
+    },
+    {
+      text: "Daniel es apoderado de su amigo Manuel que vive en el extranjero. Daniel firma en representación de Manuel un contrato de compraventa de acciones para la adquisición de un porcentaje del paquete accionario de Militos S.A. Un año después, Daniel se presenta a la asamblea de Militos alegando ser accionista por haber firmado el contrato de compraventa de acciones y por contar con las acciones en su poder. ¿Es válido el planteo de Daniel?",
+      options: ["Sí, porque Daniel presentó las acciones que tenía a nombre de Manuel.", "Sí, pues el contrato surte efectos entre el representado, el representante y el tercero.", "No, Manuel es el accionista. Daniel puede presentarse a la asamblea en representación de Manuel pero no puede pretender ser el accionista por haber firmado el Contrato de Compraventa de Acciones."],
+      correct: 2,
+      explanation: "Los actos jurídicos realizados por el representante (Daniel) en nombre del representado (Manuel), dentro de los límites de sus poderes, surten efectos directamente para el representado. El representante es un tercero respecto a la propiedad de los derechos adquiridos; Daniel nunca fue dueño, solo fue quien firmó por Manuel."
+    },
+    {
+      text: "Roberto y Juan son amigos desde hace mucho tiempo. Por la amistad que tienen, Roberto entrega un vehículo a Juan con la condición de que Juan resida siempre en el domicilio donde actualmente vive. ¿Este acto jurídico es válido?",
+      options: ["Sí, en atención a que la condición sólo afecta a la persona y no al orden público.", "No, en atención a que los actos jurídicos no pueden tener condiciones, salvo que la Ley Nro. 489/92 lo permita expresamente dentro de sus atribuciones.", "No, en atención a que la condición establecida es una condición prohibida y, por tanto, por ley se deja sin efecto el acto jurídico celebrado."],
+      correct: 2,
+      explanation: "Art. 319, inciso a). El Código prohíbe expresamente las condiciones que obliguen a \"habitar siempre un lugar determinado\". Estas condiciones se tienen por no escritas o anulan el acto si fueron el motivo determinante, ya que afectan la libertad individual protegida por la Constitución y el Código Civil."
+    },
+    {
+      text: "Roberto y Pedro son amigos desde hace mucho tiempo. El 7 de agosto de 2021, Roberto prestó dinero a Pedro. A cambio, Pedro entregó a Roberto un pagaré a la orden por la suma de Gs 10.000.000 con fecha de vencimiento el 7 de noviembre de 2021. Si bien Roberto tiene derecho al cobro del pagaré desde el momento en que Pedro entregó el documento, su exigibilidad se encuentra supeditada a un plazo. ¿De qué tipo de plazo estamos hablando?",
+      options: ["Plazo suspensivo", "Plazo extintivo", "Plazo resolutorio"],
+      correct: 0,
+      explanation: "Art. 334. El plazo es suspensivo cuando el efecto jurídico del acto (la facultad de cobrar) no es exigible antes de vencer el término. El derecho ya existe, pero su ejercicio está \"en suspenso\" hasta el 7 de noviembre."
+    },
+    {
+      text: "Eliana y José llegaron a un acuerdo según el cual Eliana vendería a José su automóvil por la suma de Gs 35.000.000. Luego de discutir acerca de algunas condiciones contractuales, suscribieron el Contrato, pero erróneamente consignaron como nombre del mismo \"Contrato de Comodato\", cuando en realidad se trataba de un contrato de compraventa. ¿Se invalidará el acto?",
+      options: ["Sí, porque se generó un error sustancial que amerita la invalidez del Contrato", "No, porque la calificación jurídica errónea que del acto hagan las partes no perjudica su eficacia, que se juzgará según el contenido real del mismo.", "No, porque a pesar de existir una discordancia, siempre debe primar el título del Contrato. En este caso, el acto no será anulado, sino que se ejecutará según como lo denominaron las partes, es decir, como un \"Contrato de Comodato\""],
+      correct: 1,
+      explanation: "Art. 301. Los actos jurídicos deben ser interpretados conforme a la intención común de las partes y al principio de la buena fe. Si las prestaciones indican una venta (cosa por precio), el juez aplicará las reglas de la compraventa aunque el título diga \"comodato\". La esencia del acto prevalece sobre el nombre."
+    },
+    {
+      text: "Carolina inició una demanda por indemnización de daños y perjuicios. Entre uno de los hechos alegados relacionados con su reclamo, mencionó a la asunción presidencial del actual Presidente de la República. No creyó necesario presentar fotos para probar que dicho evento se llevó a cabo, pues lo consideró un hecho conocido por el juez. Sin embargo, el juez rechazó la demanda porque Carolina no presentó pruebas sobre la asunción presidencial, alegando que el juez solamente puede basarse en pruebas presentadas en el expediente para emitir su fallo. ¿Tiene el juez razón?",
+      options: ["Sí, porque si emite un fallo sin pruebas puede anularse la sentencia.", "Sí, porque en derecho, lo que no se prueba no existe.", "No, porque la asunción presidencial se considera un hecho público y notorio, y esta clase de hechos no son necesarios probarse"],
+      correct: 2,
+      explanation: "El instrumento público está revestido de autenticidad, pesa sobre él una presunción de veracidad como instrumento material."
+    },
+    {
+      text: "Santiago es un vendedor de obras de arte. Lucas, muy interesado, se contacta con Santiago para comprar una obra de arte. Santiago, al percatarse de que Lucas no es especializado en arte, le ofrece un cuadro pintado como si fuese una obra del famoso artista nacional Burt, cuando en realidad no es así, para lograr la venta del cuadro a un mayor precio. Lucas, convencido de lo mencionado por Santiago, paga Gs 12.000.000 por el cuadro. ¿Existe algún vicio en el consentimiento de Lucas para la compra de este cuadro?",
+      options: ["Si. La compra del cuadro fue viciada por el engaño de Santiago lo cual configura un dolo grave del acto jurídico", "Sí. La compra del cuadro fue viciada por el engaño de Santiago lo cual configura un dolo incidental del acto jurídico", "No. La compra del cuadro no fue viciada, ya que Lucas debía conocer que Santiago lo estaba engañando"],
+      correct: 0,
+      explanation: "La voluntad de Lucas estaba viciada. Art. 290 y Art. 291. El dolo es grave cuando fue la causa determinante del acto (sin el engaño sobre la autoría de Burt, Lucas no habría comprado el cuadro). El dolo grave permite la anulación del acto jurídico y la indemnización de daños. No es incidental (Art. 292) porque aquí el engaño decidió la compra misma, no solo el precio."
+    },
+    {
+      text: "José es un comerciante en un pueblo alejado en Guairá. José abrió un puesto de fotocopias e impresiones, el único del pueblo. La familia de Pedro necesitaba realizar fotocopias de documentos identificatorios y certificados para realizar trámites legales urgentes. José, conociendo la necesidad y urgencia de Pedro, realiza las fotocopias e impresiones y le suma un 5% adicional a su precio normal. ¿Lo realizado por José, puede considerarse como lesión?",
+      options: ["Sí hubo lesión. La desproporción es evidente.", "No. Porque si bien se configura el elemento subjetivo, no se configura el elemento objetivo, ya que el aumento del precio no puede considerarse como desproporcional.", "No, porque no se configura el elemento subjetivo."],
+      correct: 1,
+      explanation: "Art.671.- Si uno de los contratantes obtiene una ventaja manifiestamente injustificada, desproporcionada con la que recibe el otro, explotando la necesidad, la ligereza o la inexperiencia de este, podrá el lesionado, dentro de dos años demandar la nulidad del contrato o su modificación equitativa. La notable desproporción entre las prestaciones hace presumir la explotación, salvo prueba en contrario."
+    },
+    {
+      text: "Mauricio se casó con Lucía, pero su matrimonio no prosperó. La pareja decidió separarse 3 años luego de contraer matrimonio, pero nunca tramitaron el juicio de divorcio. 2 años luego de su separación, Mauricio conoce a Sara, de quien se enamora y con quien inicia un noviazgo. Años más tarde, Mauricio le propone matrimonio a Sara y se casan. Es claro que ante el impedimento de ligamen que afectaba a Mauricio, el matrimonio posterior con Sara no cumple con sus elementos esenciales. Entonces, el Ministerio Público inicia una acción contra el segundo matrimonio de Mauricio. ¿Cuál es la acción que debe iniciar el Ministerio Público?",
+      options: ["Acción de nulidad del acto jurídico", "Acción para solicitar la anulabilidad del acto jurídico", "Acción de divorcio vincular"],
+      correct: 0,
+      explanation: "El impedimento de ligamen (estar casado con otra persona) afecta un elemento esencial del acto. La bigamia provoca nulidad absoluta del segundo matrimonio, correspondiendo la acción de nulidad. (Art. 357 y concordantes del Código Civil y de Familia)."
+    },
+    {
+      text: "Juan era un empresario con mucho dinero. Sin embargo, hace unos años su empresa quebró. Juan dejó deudas sin cobrar y, en consecuencia, varias demandas fueron iniciadas. Si bien Juan tiene otros medios con los que cubrir las deudas, se rehúsa a abonar las mismas. Por el contrario, va cometiendo actos con el fin de agravar su insolvencia en perjuicio de sus acreedores. Por ejemplo, vende sus bienes para que no sean embargados y renuncia a ciertos créditos que tiene por cobrar. ¿Qué pueden hacer los acreedores en estos casos?",
+      options: ["Promover la acción de simulación a los efectos de atacar los actos fraudulentos que empobrecieron el patrimonio del deudor en burla de sus acreedores.", "Promover la acción pauliana a los efectos de atacar los actos fraudulentos que empobrecieron el patrimonio del deudor en burla de sus acreedores", "No puede promover acción alguna en atención a que el deudor ya vendió todos sus bienes y no lo puede recuperar."],
+      correct: 1,
+      explanation: "La acción pauliana (o revocatoria) permite a los acreedores atacar los actos realizados por el deudor en fraude de sus derechos, para reintegrar esos bienes al patrimonio ejecutable. El Art. 311 establece que los acreedores pueden solicitar la revocación de los actos por los cuales el deudor renuncia a derechos o enajenar bienes para provocar o agravar su insolvencia, perjudicando el cobro de sus créditos."
+    },
+    {
+      text: "Mario, padre de Juan decide hacerle una donación de un terreno suyo en las inmediaciones de Villa Elisa. Para evitar problemas con sus otros hijos, Mario y Juan deciden encubrir la donación con la apariencia de una venta del inmueble. Meses después, los hermanos de Juan se enteran de este acto. Los hermanos de Juan deciden solicitar la nulidad del acto simulado entre su padre Mario y su hermano Juan. ¿Procede la nulidad?",
+      options: ["No. Mario es libre de disponer de sus bienes en vida como mejor le parezca.", "Sí. Debe ser declarada la nulidad absoluta porque un padre no puede donar bienes a sus hijos", "Sí. La donación afecta a la legítima de Juan y, por lo tanto, ese inmueble debe ser reintegrado al patrimonio de Mario."],
+      correct: 2,
+      explanation: "Se trata de una simulación relativa (Art. 306). Si bien la donación entre vivos es válida, si encubre un acto que perjudica la \"legítima\" (la parte de la herencia que corresponde por ley a los herederos forzosos), los hermanos pueden accionar para que ese bien retorne al patrimonio o se colacione."
+    },
+    {
+      text: "Julián culminó la carrera de Notariado en la UNA, recibiéndose como mejor egresado. ¿Puede Julián otorgar escrituras públicas al estar debidamente capacitado?",
+      options: ["Depende, existen algunos actos que Julián podría realizar como recién egresado, tales como el matrimonio civil.", "No, debido a que Julián primeramente debe aprobar el concurso de oposición y ser designado por el Estado como escribano público.", "Sí, Julián cuenta con la nacionalidad paraguaya, la mayoría de edad y con el título de notario público."],
+      correct: 1,
+      explanation: "Según la Ley de Organización Judicial, el título de Notario no basta para ejercer. La fe pública es delegada por el Estado a través de un usufructo de registro, el cual se obtiene mediante concurso de oposición y el respectivo decreto de designación."
+    },
+    {
+      text: "Los sujetos de toda obligación deben ser determinados o ser susceptibles de ulterior determinación. ¿Qué ocurre ante casos de títulos al portador?",
+      options: ["No existen sujetos, por lo que se trata de una obligación sui generis", "Solamente está determinado el acreedor. El deudor no podrá ser susceptible de determinación, por ser esta la característica propia de los títulos al portador.", "El sujeto activo está individualizado por el hecho de la posesión del título y el deudor por estar su nombre en el documento. Sin embargo, el deudor no podrá conocer a su acreedor sino hasta la presentación del instrumento para su cumplimiento. Por eso hay una provisional indeterminación."],
+      correct: 2,
+      explanation: "Es una característica de las obligaciones con sujetos indeterminados pero determinables. El deudor sabe que debe, pero no sabe a quién hasta que el portador presente el título (provisional indeterminación)."
+    },
+    {
+      text: "Tiziana fue a una compañía de telefonía a comprarse un celular nuevo, para el que había ahorrado por varios meses. Luego de elegir el modelo, se acercó a firmar el contrato proveído por la compañía telefónica. Se trataba de un típico contrato de telefonía en formato de formulario estándar. En una de las cláusulas decía que la empresa de telefonía acreditaría a la compradora un saldo adicional de Gs. 20.000 cada vez que pagaba su cuenta mensual. Llegó el primer mes de pago y Tiziana pagó su cuenta correspondiente dentro del plazo fijado en la factura, pero a pesar de esto, la empresa no le acreditó ningún saldo adicional. Cuando Tiziana lo reclamó, le dijeron que la promoción valía solamente si pagaba la factura el día de su emisión. Tiziana cuestionó esta interpretación pues dicha condición no estaba establecida en el contrato. ¿Qué interpretación debe primar?",
+      options: ["La de Tiziana, pues se aplica la regla contra proferentem", "La de la empresa de telefonía, pues al ser un beneficio gratuito es la empresa la que puede disponer las interpretaciones que desee", "La de la empresa, pues Tiziana no pidió aclaración alguna antes de firmar el contrato y lo debió hacer para demostrar diligencia"],
+      correct: 0,
+      explanation: "El Art. 691 establece que en los contratos con cláusulas predispuestas (como los de telefonía), las cláusulas ambiguas deben interpretarse siempre a favor de la parte que no redactó el contrato (el consumidor)."
+    },
+    {
+      text: "Saúl le prestó a Daniel, su compañero de trabajo, la suma de Gs. 10.000.000, pero no documentó el préstamo en ningún pagaré o documento similar, tampoco tenía ninguna comunicación por correo o whatsapp que acredite el préstamo realizado y mucho menos testigos. Saúl simplemente confió en la palabra de Daniel. Luego de 6 meses, Daniel negó haber recibido dinero alguno. Saúl no tuvo otra alternativa que iniciar una demanda contra Daniel, pero sin pruebas. ¿Podrá Saúl ganar la demanda?",
+      options: ["No, porque a pesar de existir un determinado y legítimo derecho, puede que no resulte reconocido legalmente, por carecer de prueba.", "No, porque solamente con un pagaré podría demostrar el préstamo realizado.", "Sí, porque el juez tiene la obligación de hacer justicia incluso si no tiene pruebas. La justicia siempre debe primar."],
+      correct: 0,
+      explanation: "Rige el aforismo procesal \"Lo que no está en el expediente, no está en el mundo\". Sin un principio de prueba por escrito (Art. 704 y 706 del CCP para contratos de cierto monto), el juez no puede dar por sentada la existencia de la obligación."
+    },
+    {
+      text: "Ximena y Ricardo firmaron un contrato de prestación de servicios, según el cual Ximena debía coimear a funcionarios públicos para conseguir que la empresa de Ricardo gane licitaciones. ¿Es válido el objeto de la obligación?",
+      options: ["Es válido, pero no es lícito ni moral. Sin embargo, esto compete al ámbito penal. El contrato no se ve afectado.", "No, porque se trata de una prestación ilícita", "No, porque si le descubren a Ximena, ambos irían a prisión"],
+      correct: 1,
+      explanation: "Art. 299, el objeto de los actos jurídicos debe ser lícito. Un contrato para cometer un delito (cohecho/coima) es nulo de nulidad absoluta por tener un objeto prohibido por la ley."
+    },
+    {
+      text: "Romina y Lara deciden constituir una sociedad anónima para poder desarrollar un emprendimiento personal y empresarial que tenían hace un buen tiempo. Las mismas acordaron que la sociedad constituida tendría una duración de 50 años desde su respectiva inscripción. ¿El plazo de duración de la sociedad, qué tipo de plazo es?",
+      options: ["Plazo suspensivo", "Plazo incierto", "Plazo extintivo"],
+      correct: 2,
+      explanation: "El Art. 334 define este plazo como aquel en el que el efecto jurídico (la existencia de la sociedad) se extingue al término del mismo. Cumplidos los 50 años, la sociedad entra en liquidación."
+    },
+    {
+      text: "Ana necesitaba Gs. 50.000.000 para pagar los tratamientos médicos de su esposo quien se enfermó de COVID. Desesperada, Ana decidió poner en venta su vehículo nuevo y de lujo por el valor justo de Gs 100.000.000. Luis, quien sabía la situación de Ana, decidió comprar el vehículo, pero solamente aceptó pagar el dinero que Ana necesitaba: Gs 50.000.000. Ante la situación de urgencia y desesperación, Ana aceptó la oferta. ¿Podría Ana alegar lesión para anular o modificar el acto jurídico?",
+      options: ["Si, se dan todos los elementos de la lesión, una ventaja manifiesta y desproporcionada y un aprovechamiento de la necesidad de la víctima.", "No se dan todos los elementos necesarios para que se configure la lesión, sino los de la simulación.", "Sólo se dan algunos elementos para que se configure la lesión, pero faltó el elemento de aprovechamiento"],
+      correct: 0,
+      explanation: "El Art. 671 se aplica aquí perfectamente, hay un elemento subjetivo (necesidad apremiante de salud de Ana y aprovechamiento de Luis) y un elemento objetivo (pagar 50 millones por algo de 100 millones es una desproporción notable del 50%)."
+    },
+    {
+      text: "Gustavo firmó un contrato según el cual se comprometió a viajar al Sol, a pesar de no ser astronauta ni de tener contacto en la NASA. ¿Es válido el objeto de la obligación?",
+      options: ["No, porque no reúne el requisito de posibilidad.", "Sí, Gustavo deberá demostrar que puede cumplir el contrato.", "No, porque el objeto no es determinable."],
+      correct: 0,
+      explanation: "El objeto de la obligación debe ser posible. Viajar al Sol es físicamente imposible para Gustavo, por lo que el objeto no cumple con el requisito de posibilidad, invalidando el acto."
+    },
+    {
+      text: "El 1 de febrero del 2020, Pedro contrató a Juan para que éste lo represente en todos sus asuntos laborales, otorgando un poder general para ello. En virtud de tal representación, Juan reconoció en nombre de Pedro, una obligación que éste (Pedro) había contraído con José hacía unos años atrás para llevar a cabo \"X\" negocio, el cual a la fecha, aún no había comenzado. El reconocimiento realizado por Juan, ¿es válido?",
+      options: ["Sí, puesto que Juan cuenta con poder otorgado por Pedro para su representación en cuestiones laborales.", "No, porque el reconocimiento de las obligaciones es un acto personalísimo.", "No, porque para reconocer una obligación anterior en nombre de otra persona, es necesario un poder especial que faculte expresamente a ello."],
+      correct: 2,
+      explanation: "Art. 884 enumera los actos que requieren poder especial. El reconocimiento de obligaciones contraídas antes del mandato es un acto de disposición y responsabilidad que no se presume en un poder general administrativo o laboral."
+    }
+  ]
+},
+
+// ── EJERCITARIO 2 (40 preguntas) ──
+{
+  name: "Ejercitario 2",
+  full: "Instrumentos, Representación y Responsabilidad",
+  questions: [
+    { text: "El instrumento público por excelencia que debe ser autorizado por escribanos públicos es:", options: ["La certificación de firma", "El acta notarial", "Escritura pública integrada al libro de protocolos"], correct: 2, explanation: "Las escrituras públicas son el instrumento público más importante y formal. Se asientan en el protocolo (libro) del escribano, quien tiene la custodia del mismo. Las certificaciones y actas son documentos notariales, pero la escritura es la que instrumenta negocios jurídicos complejos." },
+    { text: "Ante la existencia de un ilícito civil ¿Existe la posibilidad de exención de responsabilidad?", options: ["No. Sólo los ilícitos penales pueden ser sujetos de exención de responsabilidad", "Sí, cuando el ilícito ocurra por caso fortuito o cuando haya culpa de parte de la víctima.", "Sí, Únicamente así se prueba que hay culpa por parte de la víctima"], correct: 1, explanation: "Art.1842 CCP.- El que cometiere un acto ilícito actuando bajo la dependencia o con autorización de otro, compromete también la responsabilidad de éste. El principal quedará exento de responsabilidad si prueba que el daño se produjo por culpa de la víctima o por caso fortuito." },
+    { text: "Felipe Fort de 13 años hereda de su padre Ricardo acciones en empresas e inmuebles en Miami y Buenos Aires, Felipe quiere hacer un crucero de un año recorriendo el mundo por lo que decide vender un departamento en Miami. Para dicho efecto Felipe firma un contrato de compraventa con Luis Nikola, un empresario exitoso de Puerto Rico. ¿Estamos ante un acto voluntario?", options: ["Sí pues Felipe toma la decisión de viajar y de vender un departamento de su propiedad para poder costear el viaje por lo que hay discernimiento", "Sí porque Felipe no tiene ninguna sentencia de interdicción que lo inhabilite a realizar el acto", "No pues el elemento interno de discernimiento se encuentra ausente en el acto por lo que no estamos ante un acto jurídico voluntario."], correct: 2, explanation: "Según el Art. 277 y 278, la ley presume que los menores de 14 años carecen de discernimiento para actos lícitos. Sin discernimiento, el acto es involuntario y, por ende, nulo." },
+    { text: "Juancito tiene 12 años y celebra un contrato de compra venta sin capacidad para hacerlo. La minoría de edad de Juancito es:", options: ["Un hecho jurídico", "Un acto jurídico", "Un hecho voluntario"], correct: 0, explanation: "Es un acontecimiento natural (el paso del tiempo) que produce consecuencias jurídicas (incapacidad) independientemente de la voluntad del sujeto." },
+    { text: "Julio celebró un contrato de compraventa en nombre y representación de María. En virtud del cual Julio vendió un inmueble de propiedad de María. Julio no tenía un mandato de María que le autorizase a celebrar el contrato de compraventa al momento en que fue celebrado. No obstante 5 días después de celebrado el contrato María se ratificó íntegramente en el contenido de éste. El comprador por su parte se rehusó a aceptar la ratificación y sostuvo que el contrato debía ser anulado porque Julio lo celebró sin autorización. La postura del comprador...", options: ["Es correcta, Julio no contaba con autorización para celebrar el acto al momento en que fue celebrado y la ratificación posterior no tiene efecto de subsanar la falta de mandato", "Es correcta. La ratificación tiene efecto retroactivo", "Es incorrecta. La ratificación tiene efecto de subsanar las actuaciones realizadas por un representante cuando careciendo de poderes y tiene efectos retroactivos al momento de celebración del acto"], correct: 2, explanation: "La ratificación tiene efecto retroactivo al momento de la celebración del acto, subsanando la falta de poder del representante." },
+    { text: "La diferencia entre un hecho y un acto radica de los siguientes principios:", options: ["Principio de autonomía de la voluntad, pues a través de su voluntad es que celebra actos que cree oportunos", "Principio de legalidad, No puede un acto surtir efectos sin que esté contemplado en una ley", "Principio de omisiones, Pues las omisiones también tienen como consecuencia la creación o extinción de derechos"], correct: 0, explanation: "En el acto jurídico, la voluntad busca específicamente producir efectos legales. En el hecho jurídico, el efecto se produce por ley, haya o no intención." },
+    { text: "Julio, Primo de María, se obligó a pagar a María Gs. 1.000.000 Sujeto a que María apruebe el examen de hechos y actos jurídicos y termine el quinto semestre de la Universidad en el 2022. María aprobó el examen de hechos y actos jurídicos con calificación 5 felicitado. No obstante, no terminó el quinto semestre de la Universidad en el 2022. Ante esta situación la condición suspensiva:", options: ["No fue cumplida en la forma en que fue estipulada, ya que el cumplimiento de la condición es indivisible aunque la prestación consta de hechos divisibles", "Debe ser cumplida parcialmente ya que existió cumplimiento parcial. Consecuentemente julio debe pagar a María Gs. 500.000 porque ésta cumplió con el 50% de los hechos a los que se supeditó el pago total.", "Puede ser cumplida parcialmente pero solo si María recurre a un juez para solicitar la fijación de la proporción de pago que corresponde."], correct: 0, explanation: "El Art. 320 establece que las condiciones deben cumplirse íntegramente, en la forma en la que fueron estipuladas. Cumplir la mitad no genera el derecho a cobrar la mitad de la suma prometida." },
+    { text: "Alejandra realiza una publicación en Marketplace de Facebook, ofreciendo en venta una paleta de pádel por la suma de Gs. 500.000 y menciona que los interesados deben contactarse por whatsapp a su número de celular. Al cabo de 2 días Mauricio le escribe y consulta si la paleta sigue disponible a lo que Alejandra le confirma la disponibilidad de la misma. Las partes acuerdan por whatsapp la venta de la paleta y que la entrega del objeto y del dinero será realizada en café GM a las 16:00 h del mismo día. ¿Es válido el acuerdo al que llegaron Alejandra y Mauricio?", options: ["Sí, porque los acuerdos celebrados por vía electrónica producen efectos jurídicos idénticos a los realizados por escrito en papel", "No porque la manifestación de voluntades de Alejandra y Mauricio no está escrita en papel", "No porque los acuerdos no pueden ser celebrados a través de medios electrónicos"], correct: 0, explanation: "Los contratos celebrados por vía electrónica producen efectos jurídicos idénticos a los escritos en papel (Art. 24, Ley 4868/13)." },
+    { text: "Pablo y Paloma quieren casarse. Ellos se acercan al Registro Civil y solicitan los servicios de Juan Pablo un oficial público de dicho registro. El 7 de mayo de 2022 el Registro Civil emite una resolución en donde se suspenden las atribuciones de Juan Pablo como oficial de Registro Civil del país con efecto inmediato. Sin embargo Juan Pablo no avisa de esta situación a Pablo y a Paloma y se presenta el 12 de mayo de 2022 a fin de celebrar el acto del matrimonio civil. ¿Es posible que Juan Pablo otorgue el instrumento público de acta de matrimonio a Pablo y a Paloma?", options: ["Sí es posible porque Pablo y Paloma solicitaron los servicios de Juan Pablo como oficial de Registro Civil de manera previa a la suspensión de sus atribuciones", "No, no es posible porque desde el momento en que Juan Pablo fue suspendido en sus atribuciones como oficial público pierde la capacidad para otorgar el acta de matrimonio", "Sí es posible porque Juan Pablo sólo fue suspendido de sus atribuciones y no destituido del cargo"], correct: 1, explanation: "Art. 377, para que un instrumento público sea válido, el oficial debe ser competente y estar en ejercicio de sus funciones. La suspensión le quita esa facultad temporalmente, invalidando el acta." },
+    { text: "Juan de 18 años realizó llamadas extorsivas al papá de su compañero David Gómez, causando pérdidas económicas y reputacionales. La extorsión está tipificada por el artículo 185 del Código Penal. ¿Puede David iniciar también una acción civil para obtener un resarcimiento por el daño causado?", options: ["No pues al estar tipificado expresamente en el Código Penal debe David iniciar una acción penal", "Sí pero David debe iniciar primero una acción penal que tenga sentencia a su favor para luego iniciar una acción civil", "Sí ambas acciones son independientes"], correct: 2, explanation: "Un mismo hecho puede generar responsabilidad penal (castigo del Estado) y civil (reparación del daño al particular). Se pueden tramitar por separado (Art. 1833 y sig.)." },
+    { text: "Mariela es una señora viuda que tiene 3 hijas Luisa, Lorena y Lisandra. Mariela decide realizar la donación de un terreno (bien registrable) a sus hijas como adelanto de herencia. Lorena es escribana pública matriculada por la CSJ y nombrada en la ciudad que corresponde al inmueble y al domicilio de todas las partes por lo que ofrece a su familia formalizar el acto de donación en su protocolo. ¿Existe alguna limitación para el otorgamiento de dicho instrumento público?", options: ["No, no existe limitación porque Lorena es una escribana pública que cuenta con una investidura para otorgar instrumentos públicos, así como competencia territorial y material", "Sí existe una limitación ya que Lorena no puede intervenir en el otorgamiento de la escritura pública como escribana pública puesto que el acto jurídico es de interés personal para ella y para sus parientes dentro del cuarto grado de consanguinidad", "No, no existe limitación porque la donación no exige la formalización de escritura pública"], correct: 1, explanation: "Art. 377, prohíbe a los escribanos autorizar actos donde ellos o sus parientes cercanos sean parte interesada, para garantizar la imparcialidad de la fe pública. Lorena tiene interés personal en el acto y sus parientes dentro del cuarto grado de consanguinidad son parte, lo que la inhabilita." },
+    { text: "En su testamento el abuelo de Guillermo decide entregar gratuitamente un inmueble de su propiedad. En aquel testamento su abuelo mencionó: \"como cargo simple Guillermo deberá construir una pileta en la casa para que puedan compartir los miembros de la familia\". Guillermo se adjudica el inmueble en sucesión de su abuelo, años después Guillermo aún no construyó la pileta. ¿Qué responsabilidad recae sobre Guillermo?", options: ["Ninguna, los cargos son por esencia de cumplimiento voluntario", "Guillermo puede ser obligado a restituir el inmueble", "Dado que se trata de un cargo simple Guillermo solo puede ser obligado a cumplir con la construcción de la pileta o en todo caso ser demandado por los daños y perjuicios que ocasione la falta de cumplimiento"], correct: 2, explanation: "Dado que es un cargo simple, Guillermo solo puede ser obligado a cumplir con la construcción o ser demandado por daños y perjuicios. El cargo simple no tiene efecto resolutorio sobre el derecho principal." },
+    { text: "María Acosta celebró un contrato de seguro con la aseguradora Monty SA en virtud del cual se pactó que en caso de fallecimiento de María la aseguradora deberá pagar la suma de Gs. 150.000.000 a Juan Acosta hijo único de María. Juan Acosta no fue parte del contrato de seguro. ¿La disposición por la cual se prevé que se pagará una suma de dinero a Juan Acosta es válida?", options: ["No es válida en virtud del principio de la relatividad de los efectos. El contrato fue celebrado únicamente por María Acosta y la aseguradora MONTY SA y por tanto lo actuado entre ellos no se puede obligar a perjudicar o ser aprovechado por terceros", "Sí es válida en tanto nos encontramos ante una disposición cuya finalidad principal es la atribución directa de una ventaja a favor de un tercero. Juan Acosta", "Sí es válida porque si bien rige el principio de la relatividad de los efectos en relación con los actos jurídicos la pregunta no se refiere a un acto jurídico como sería el contrato de seguro sino solamente a una disposición específica"], correct: 1, explanation: "Juan Acosta es un tercero beneficiario. Constituye una excepción al principio de relatividad de los efectos, ya que el contrato de seguro de vida designa un beneficiario que no fue parte del contrato." },
+    { text: "María es demandada por cumplimiento de un contrato de prestación de servicios de arquitectura con la empresa Bienes Raíces Co. María recibe la notificación debido a reconocer su firma ante el juez pero decide no acudir porque tenía un desayuno con sus amigas. ¿Está María reconociendo su firma?", options: ["Sí porque cuando existe el deber legal de reconocer la firma y el citado no comparece, está reconociendo la misma de forma tácita", "No, este caso debe ir acompañado por otro acto para que sea considerado como un reconocimiento. Ej: Enviar la foto de la firma o foto de su cédula", "No, María es libre de acudir cuando le parezca por el principio de autonomía de la voluntad"], correct: 0, explanation: "Cuando existe el deber legal de reconocer la firma y el citado no comparece, se produce el reconocimiento tácito por silencio con apercibimiento (Art. 282 y Art. 404)." },
+    { text: "El ilícito civil se configura cuando:", options: ["Así lo estipule el Código Penal", "El acto esté expresamente prohibido por el Código Civil", "Se realiza un acto prohibido por la ley que ocasiona un daño que pueda ser atribuible por culpa o dolo a quien realizó el acto"], correct: 2, explanation: "Se realiza un acto prohibido por la ley que ocasiona un daño atribuible por culpa o dolo, el ilícito civil requiere antijuridicidad, daño y factor de atribución subjetivo (Art. 1834)." },
+    { text: "El Código Civil establece que las donaciones de inmuebles deben hacerse por escritura pública bajo pena de nulidad. ¿Qué es esta norma dentro de la materia de hechos y actos jurídicos?", options: ["Un supuesto jurídico", "Un hecho jurídico", "Un acto jurídico"], correct: 0, explanation: "Es la hipótesis prevista en la norma que, de ocurrir el hecho (donación de inmueble sin escritura pública), produce el efecto jurídico previsto (nulidad)." },
+    { text: "Constructora SA y Julián firman un contrato de adhesión por medio del cual la constructora se comprometió a construir una pileta en el patio de Julián. Una de las cláusulas del contrato menciona que la constructora está obligada a indemnizar a Julián por los daños que ocasionaran los funcionarios de la misma durante la ejecución del contrato, pero fuera del horario laboral. Los funcionarios se quedan tomando cerveza en la casa de Julián y uno de ellos rompe la mesa del quincho. Julián demanda a la constructora. El juez se encuentra ante dos interpretaciones razonables y no encuentra ninguna prueba que permita determinar cuál fue la verdadera intención de las partes. Ante este caso ¿qué debe hacer el juez?", options: ["Bajo la interpretación contra proferentem, acoger la interpretación de Julián y obligar a la constructora a pagar los costos de reparación de la mesa", "Fue con la interpretación literal, acoger la interpretación de Julián y pedir la indemnización por los daños causados en horario laboral", "Bajo la interpretación del tercero razonable, acoger la interpretación de la constructora equilibrada a los intereses de ambas partes"], correct: 0, explanation: "En contratos de adhesión, las cláusulas ambiguas se interpretan a favor de quien no las redactó (Art. 691)." },
+    { text: "Los contratos celebrados por vía electrónica:", options: ["Producen los mismos efectos que los contratos escritos", "Producen efectos sin embargo deben estar autenticados por escritura pública", "No produce ningún tipo de efecto"], correct: 0, explanation: "El Art. 24 de la Ley 4868/13 establece que los contratos electrónicos producen los efectos previstos para los contratos escritos." },
+    { text: "Luis, un niño de 12 años, firma un contrato de compra venta de tomates por contrato privado, para vender los tomates que cultiva a su padre. ¿El acto es nulo o anulable?", options: ["Nulo pues se trata de un acto realizado por un menor de 14 años", "Anulable pues a partir de los 12 años los actos de los menores son simplemente anulables", "Nulo pues el niño de 12 años solo puede firmar contratos por escritura pública y con autorización de sus padres"], correct: 0, explanation: "Luis tiene 12 años, es menor de 14, por lo que carece de discernimiento según el Art. 278. Los actos realizados sin discernimiento son nulos." },
+    { text: "Rafael da dinero prestado a Federico y este último firma un pagaré por la suma prestada. La fecha del vencimiento del pagaré es el 1 de abril del 2025. ¿Qué tipo de plazo se fijó en este acto jurídico?", options: ["El plazo es extintivo ya que su vencimiento determina la terminación de un plazo", "El plazo es suspensivo ya que difiere para un tiempo futuro el cumplimiento de una obligación", "El plazo es suspensivo ya que su vencimiento determinó la terminación de los efectos del acto jurídico celebrado"], correct: 1, explanation: "Difiere para un tiempo futuro el cumplimiento de la obligación de pago. El derecho ya existe pero no es exigible hasta el 1 de abril de 2025." },
+    { text: "Antonio se comprometió a pagar a María en concepto de canon por renta vitalicia la suma de Gs. 6.000.000 mensual hasta la muerte de esta última. ¿Qué tipo de plazo se fijó en este acto jurídico?", options: ["Se fijó un plazo incierto ya que se refiere a un acontecimiento futuro que necesariamente se producirá aunque no se conozca cuándo", "Se fijó un plazo cierto ya que si bien no se sabe con certeza cuándo se producirá sí se sabe qué necesariamente se producirá el acto futuro", "Se fijó una condición ya que existe incertidumbre respecto a la fecha del hecho"], correct: 0, explanation: "Se refiere a un acontecimiento futuro (la muerte) que necesariamente se producirá, aunque no se sepa cuándo. Lo incierto es el momento, no el hecho en sí." },
+    { text: "Un acto jurídico es:", options: ["Un hecho humano o natural, voluntario lícito que tiene como finalidad inmediata producir consecuencias jurídicas", "Un hecho humano voluntario lícito que tiene como finalidad inmediata producir consecuencias jurídicas", "Un hecho humano voluntario lícito bilateral que tiene como finalidad inmediata la de producir consecuencias jurídicas"], correct: 1, explanation: "Conforme al Art. 296 del CC." },
+    { text: "¿Cuál es el efecto de un ilícito civil voluntario?", options: ["Prisión por hasta dos años por tratarse de un ilícito civil", "Los ilícitos civiles no tienen sanción simplemente se hace un llamado de atención al actor", "El efecto implica la obligación de reparar los daños y perjuicios ocasionados"], correct: 2, explanation: "Quien comete un ilícito civil voluntario está obligado a resarcir el daño causado (Art. 1833)." },
+    { text: "Los actos formales son aquellos que deben celebrarse observándose las solemnidades prescriptas en la ley. Esto se dividen en solemnes y no solemnes. ¿Cuáles de los siguientes actos son solemnes y por qué?", options: ["El matrimonio, la Constitución de sociedades y los testamentos en vista a que requieren en su formación la observancia de las formas prescritas de las leyes bajo pena de ineficacia", "El matrimonio, la Constitución de sociedades y los testamentos en vista que requieren las solemnidades prescritas a los efectos de la prueba y publicidad del acto", "La Constitución de sociedades y los testamentos en vista a que requieren las solemnidades prescritas al momento de celebración del contrato y mientras tenga efectos."], correct: 0, explanation: "Son actos solemnes porque requieren en su formación la observancia de las formas prescritas bajo pena de ineficacia." },
+    { text: "Lechufresh es una empresa proveedora de lechugas que provee lechugas a Sándwiches Saludables hace 2 años. Lechufresh siempre envió su listado de precios a la encargada de Sándwiches Saludables por whatsapp. El 5 de enero Lechufresh notificó vía whatsapp a Sándwiches Saludables sobre la suba en sus productos. ¿Podría considerarse que Sándwiches Saludables aceptó la suba del precio?", options: ["Sí porque la suba fue notificada a Sándwiches Saludables y en este caso el mismo acompañado por un nuevo pedido implica aceptación", "No porque la ley del consumidor establece que en estos casos se debe reevaluar el precio", "No, los cambios de precio vía whatsapp no son válidos"], correct: 0, explanation: "El nuevo pedido acompañado del silencio ante la notificación del aumento constituye una manifestación tácita de aceptación, basada en la conducta anterior de las partes (Art. 282)." },
+    { text: "¿Cuál de los siguientes actos jurídicos deben constar necesariamente por escrito?", options: ["Todos los contratos deben constar por escrito a fin de que se plasmen los derechos y las obligaciones de las partes", "Los contratos cuyo valor excede a los 10 jornales en vista que estos deben ser probados por escrito y no se admite pruebas de testigos", "Los contratos que afecten derechos de terceras personas"], correct: 1, explanation: "Deben ser probados por escrito y no se admite prueba de testigos para acreditar su existencia." },
+    { text: "Marco tiene 13 años y está interesado en alquilar una casa para independizarse. Para dicho efecto Marco hace una búsqueda con distintas inmobiliarias hasta encontrar la casa que más le gustaba. ¿Puede Marco firmar un contrato de alquiler?", options: ["Sí pues estamos ante un acto voluntario lícito que Marco realiza con discernimiento intención y libertad además Marco manifestó su voluntad de firmar el contrato", "Sí pues no hay coacción para hacerle firmar el contrato a Marco", "No pues Marco no tiene discernimiento para ejecutar el acto"], correct: 2, explanation: "Marco tiene 13 años, es menor de 14, carece de discernimiento según el Art. 278, por lo que no puede celebrar válidamente el contrato." },
+    { text: "¿Cuáles son los requisitos para que se configure un acto ilícito civil?", options: ["Tipicidad antijuricidad y reprochabilidad", "Actos prohibidos por ley que ocasionan un daño y puedan ser imputables por culpa o dolo que realice el acto", "El acto debe estar expresamente prohibido por el Código Civil"], correct: 1, explanation: "Los tres requisitos del ilícito civil son, la antijuridicidad, daño y factor de atribución (Art. 1834)." },
+    { text: "En la ejecución de un contrato de alquiler se pactó que el contrato se renovaría automáticamente cada 3 años siempre que no haya comunicación verbal entre las partes de dar por terminado el mismo. Si transcurridos los primeros 3 años el locatario no comunica la terminación del contrato ni recibe la comunicación por parte del Locador y realiza el pago del alquiler. ¿Se podría considerar que el contrato se renovó?", options: ["Sí porque el pago del alquiler es una forma de manifestación tácita de renovación del contrato", "No porque la renovación necesariamente debe darse por escrito", "No porque los contratos de alquiler son válidos por dos años"], correct: 0, explanation: "El pago del alquiler es una manifestación tácita de voluntad de renovar, reforzada por la cláusula contractual que así lo preveía (Art. 282)." },
+    { text: "Carolina vende un celular a Isabela. En el mismo acto Carolina le entrega el celular a Isabela e Isabela entrega el precio total del celular a Carolina. Carolina insiste en suscribir un contrato de compraventa pero Isabela insiste en que no es necesario. ¿Cuál sería el fundamento de Isabela?", options: ["Los otorgantes ya cumplieron todas las obligaciones que serían plasmadas en el contrato", "Porque se podría demostrar por otras pruebas que el acto fue concluido de una manera definitiva", "A y B son correctas", "Ninguna de las anteriores"], correct: 2, explanation: "La omisión de requisitos formales no invalida el acto cuando uno de los otorgantes ya cumplió todas sus obligaciones, o cuando pueden demostrarse por otras pruebas (Art. 401)." },
+    { text: "¿Cuáles son las causas de exoneración de responsabilidad contractual?", options: ["Caso fortuito, fuerza mayor y negligencia", "Caso fortuito y fuerza mayor", "Caso fortuito, fuerza mayor e idolo"], correct: 1, explanation: "Son las causas de exoneración de responsabilidad contractual reconocidas en el CC." },
+    { text: "¿Cuál de los siguientes elementos es indispensable para un acto jurídico y por qué?", options: ["Todo acto jurídico debe constar por escrito y cumplir con los requisitos previstos en el Código Civil y en leyes especiales. En caso de incumplimiento el acto carece de validez", "Todo acto jurídico debe contar con la verdadera intención de quienes participan en el acto. En caso de que no se cumpla esto el acto carece de validez", "Todo acto jurídico debe ser visible y expresar la voluntad de quienes participan en el acto. La voluntad interna sin trascender al mundo exterior carece de significación"], correct: 2, explanation: "La manifestación exterior es indispensable (Art. 279): \"Ningún acto tendrá el carácter de voluntario, sin un hecho exterior por el cual la voluntad se manifieste.\"" },
+    { text: "Andrea y Awilda son hermanas y deciden comprar un departamento que se encuentra en construcción juntas. Gabriela, la vendedora, prepara el contrato para su suscripción. ¿Cuántas copias del contrato debe preparar Gabriela?", options: ["3 copias una para cada parte interesada", "2 copias una para las compradoras y una para la vendedora", "1 copia solo para la parte compradora"], correct: 1, explanation: "Una para las compradoras (que comparten el mismo interés) y una para la vendedora. El Art. 400 exige tantos ejemplares como partes con interés distinto, y aquí hay dos intereses distintos: compradores y vendedor." },
+    { text: "La diferencia entre un hecho y un acto jurídico radica en uno de los siguientes principios:", options: ["Principio de legalidad, No puede un acto surtir efectos sin que esté contemplado en una ley", "Principio de autonomía de la voluntad pues a través de su voluntad es que celebra actos que considera oportunos", "Principio de omisiones pues las omisiones también tienen como consecuencia la creación o extinción de derechos"], correct: 1, explanation: "En el acto jurídico la voluntad busca específicamente producir efectos jurídicos, lo que lo distingue del simple hecho jurídico." },
+    { text: "Daniel y Santiago se encuentran en un remate haciéndose chistes entre ellos sobre quién adquiriría el toro mayor. Los postores iban levantando sus carteles mientras el precio seguía subiendo. El último precio por el cual se ofrecía el toro era de Gs. 500.000.000.000. Daniel levanta su cartel y ya nadie ofreció un monto mayor por el toro. ¿Se podría considerar que Daniel manifestó su voluntad de adquirir el toro?", options: ["No pues Daniel y Santiago claramente no tenían la intención de adquirir el toro ya que estaban haciendo chistes en el remate", "Sí, pues los carteles utilizados en el remate son formas de expresar la voluntad de los postores", "Depende de si Daniel habló o no con los organizadores del remate manifestando verbalmente su intención de adquirir el toro"], correct: 1, explanation: "Levantar el cartel en un remate es un signo inequívoco de manifestación de voluntad (Art. 281), equivalente a una declaración positiva expresa." },
+    { text: "En los casos de ocurrencia de un ilícito civil ¿Cuáles serían los motivos de exención de responsabilidad?", options: ["Solo los ilícitos penales pueden ser sujetos de extinción de responsabilidad", "La responsabilidad no corresponde cuando se prueba que hay culpa de la víctima", "La responsabilidad no corresponde cuando el ilícito ocurrió por caso fortuito o cuando hay culpa de parte de la víctima"], correct: 2, explanation: "Son las causales de exención del ilícito civil." },
+    { text: "Una de las principales diferencias entre un instrumento público y un instrumento privado es que el instrumento público es emitido por un oficial público. ¿Existe alguna excepción a esta regla?", options: ["No todos los instrumentos públicos son emitidos por un oficial público sin excepción", "Sí, existen instrumentos públicos que pueden ser emitidos por instituciones privadas como por ejemplo los bonos del Estado", "Sí pero sólo cuando la persona a favor de quien se emite el documento lo solicitara"], correct: 1, explanation: "Existen instrumentos públicos que pueden ser emitidos sin intervención directa de oficial público, como los títulos de crédito emitidos por el Estado (Art. 373 inc. e)." },
+    { text: "¿Puede una persona ser responsable a pesar de no existir una causal de atribución de responsabilidad subjetiva?", options: ["Sí, existen múltiples casos de responsabilidad objetiva", "No. La responsabilidad siempre deriva del dolo o la culpa", "No. La responsabilidad siempre deriva de la negligencia, la impericia o la imprudencia"], correct: 0, explanation: "Existen múltiples casos de responsabilidad objetiva, como el riesgo creado (Art. 1846): quien crea un peligro con su actividad responde por el daño aunque no haya culpa." },
+    { text: "En virtud del principio de libertad de formas que se encuentra previsto en el Código Civil paraguayo solo excepcionalmente cuando la ley así lo dispone taxativamente deberá observarse alguna solemnidad determinada para el acto jurídico de que se trate. Cuando se requiere una formalidad es a los efectos de:", options: ["Cumplir con los requisitos previstos tanto en el Código Civil como en leyes especiales", "Dar prueba del acto, dar publicidad del acto y facilitar la fluidez del tráfico jurídico", "Dar publicidad del acto, la prueba de los actos jurídicos se da por cualquier medio"], correct: 1, explanation: "Estas son las tres finalidades de las formalidades cuando la ley las exige." },
+    { text: "En el derecho romano el formalismo de los actos jurídicos se hallaba acentuado en extremo. Todos los actos jurídicos eran formales y la omisión de cualquier solemnidad invalidaba el acto. ¿Cuál es la explicación de esto?", options: ["La mayoría de los actos jurídicos se celebraban verbalmente. Por tanto eran indispensables las solemnidades a fin de dar seguridad a los actos celebrados. Además, tampoco existían sistemas como registros públicos entonces también servía como medio de publicidad del acto", "Los actos jurídicos se celebraron tanto verbalmente como por escrito. En los actos celebrados verbalmente las solemnidades eran variadas tanto con palabras o frases o con ceremonias especiales. La solemnidad sólo era necesaria en actos que tenían que tener cierto grado de publicidad o que eran celebrados en lugares privados", "La mayoría de los actos jurídicos se celebraban verbalmente. En consecuencia, las solemnidades eran indispensables en los actos formales. Sin embargo, en los actos no formales no había necesidad de cumplir con solemnidades ya que su obligatoriedad sólo se daban los actos formales"], correct: 0, explanation: "La mayoría de los actos jurídicos se celebraban verbalmente, por lo que las solemnidades eran indispensables para dar seguridad y publicidad, ante la inexistencia de registros públicos." }
+  ]
+},
+
+// ── EJERCITARIO 3 (20 preguntas) ──
+{
+  name: "Ejercitario 3",
+  full: "Supuestos Jurídicos, Plazo y Condición",
+  questions: [
+    { text: "Una norma jurídica establece: Si un ciudadano sale fuera de su casa en época de cuarentena, será multado con 8.000.000 de guaraníes. Este es un caso de:", options: ["Un hecho jurídico", "Un acto jurídico", "Un hecho humano voluntario", "Un supuesto jurídico", "Una irresponsabilidad del ciudadano"], correct: 3, explanation: "Es la hipótesis prevista en la norma que, de ocurrir el hecho (salir en cuarentena), produce el efecto jurídico (la multa)." },
+    { text: "Juan es acreedor de Pedro por la suma de 10.000.000 de Gs. Instrumentado en un pagaré, que venció el 20 de noviembre de 2015, al no ejecutar el documento a los 4 años prescribió su derecho. En este acto se trata de:", options: ["Un hecho positivo porque Juan se liberó de la deuda", "Un hecho negativo", "Un hecho condicionado al transcurso del tiempo", "Un hecho con plazo resolutorio", "Un hecho insólito de Juan"], correct: 1, explanation: "La prescripción opera por una omisión (no ejecutar el documento en plazo), que es un hecho negativo con consecuencias jurídicas." },
+    { text: "Pedro es joven, apuesto, adinerado pero incapaz por falta de discernimiento, se lo designó a un curador a un tío humilde y carente de recursos económicos-financieros. En un descuido, Pedro escapó de la vigilancia y cometió un ilícito al agredir y producir una herida cortante a un transeúnte. La responsabilidad civil corresponde:", options: ["Existe eximición de responsabilidad", "Deberá enfrentar el curador aunque sea insolvente", "Deberá soportar el agredido por no cuidarse y se presume culpa concurrente", "El Juez podrá condenar al incapaz a una indemnización equitativa"], correct: 3, explanation: "Cuando la víctima no puede cobrar al responsable legal, el juez puede imponer al autor (aunque sea incapaz) una indemnización justa según el patrimonio de las partes (Art. 1850 y excepción de indemnización equitativa)." },
+    { text: "Juan celebra un contrato con Pedro y éste se compromete a vender a Pedro un kilo de droga no comercializable denominada cocaína, contrato celebrado en virtud del principio de la autonomía de la voluntad, sin conocer ambos de la dificultad de su comercialización. Este caso es:", options: ["Una restricción a la autonomía de la voluntad por ignorancia de las partes", "Una restricción a la autonomía de la voluntad por el objeto ilícito", "Una restricción a la autonomía de la voluntad por desconocimiento de la ley", "Una restricción a la autonomía de la voluntad por estar en juego el orden público"], correct: 3, explanation: "La cocaína es una sustancia cuya comercialización está prohibida, lo que hace ilícito el objeto del contrato, limitando la autonomía de la voluntad." },
+    { text: "Juan tomó posesión de un inmueble desocupado con la finalidad de producir consecuencia jurídica favorable a su parte que es la sentencia de declaración de usucapión y convertirse en propietario. Este caso es:", options: ["un acto jurídico al buscar consecuencia jurídica favorable", "un hecho humano simple", "un hecho humano voluntario lícito que busca producir consecuencias jurídicas", "un hecho humano complejo"], correct: 3, explanation: "La usucapión requiere el cumplimiento de varios presupuestos sucesivos (posesión pública, pacífica, durante 10 o 20 años), por lo que es un hecho complejo." },
+    { text: "Pedro padeció de un accidente de tránsito sufriendo un golpe en la cabeza que lo dejó sin discernimiento por una semana, en ese interín, su hermano Juan adquirió de él a menor precio, su único inmueble donde vivía. Luego recobró su discernimiento. Este caso se trata de:", options: ["un acto nulo", "un acto ineficaz de origen por la falta de discernimiento", "un acto inoponible", "un acto anulable", "un acto fraudulento por malicioso adquiriente"], correct: 3, explanation: "Cuando el acto se celebra sin discernimiento por causa transitoria (el golpe en la cabeza), el acto es anulable, no nulo absolutamente. El Art. 278 dice que los actos realizados sin discernimiento son nulos. Sin embargo, algunos autores sostienen que si la incapacidad es transitoria y no declarada judicialmente, el acto es anulable." },
+    { text: "Un ciudadano italiano residente en el Paraguay vendió a su compatriota residente en Italia un inmueble de 200 hectáreas supuestamente en la serranía de Caacupé, Dpto de la Cordillera mediante hábil maniobra, sin embargo, cuando llegó a la capital de la República buscó el inmueble y encontró su ubicación en el Dpto de Boquerón Chaco. Luego planteó la acción de nulidad. En este caso la nulidad correspondería a:", options: ["A falta de cumplimiento del contrato", "Porque el objeto es distinto", "Porque existe un vicio que afecta a la buena fe", "Porque existe un error", "Porque existe dolo y es considerado realizado sin intención"], correct: 4, explanation: "Santiago engañó al comprador italiano haciéndole creer que el inmueble estaba en Caacupé cuando estaba en Boquerón (dolo). El dolo vicia la intención (del italiano) y permite la anulación del acto." },
+    { text: "Juan otorgó un préstamo de 100.000.000 de Gs a Pedro por un año percibiendo los intereses al momento de la entrega, luego de un año. Pedro ofrece pagar los intereses por el siguiente año y Juan lo recibe. En este caso:", options: ["Existe una necesidad de aclarar sobre el destino del capital", "Pedro hizo un pago indebido de los intereses porque no existe un contrato por un nuevo plazo", "Pedro tiene una acción de repetición de lo pagado", "Existe una necesidad de manifestar la voluntad de seguir con el préstamo", "Existe una manifestación tácita de la voluntad para una prórroga de un año"], correct: 4, explanation: "Al recibir los intereses por un nuevo período sin oponerse, Juan manifiesta tácitamente su voluntad de prorrogar el contrato (Art. 282)." },
+    { text: "Los actos voluntarios considerados como ilícitos según nuestro Código son aquellos que reúnen los siguientes elementos:", options: ["Daño, transgresión, antijuridicidad, relación causal", "Transgresión-antijuridicidad, imputabilidad-dolo o culpa, relación causal", "Transgresión (antijuridicidad), imputabilidad (dolo o culpa), daño o hecho exterior capaz de ocasionarlo", "Imputabilidad (dolo o culpa), relación causal y hecho exterior capaz de ocasionar daño", "Ninguna de las anteriores"], correct: 2, explanation: "Estos son los tres requisitos del ilícito civil voluntario según el Art. 1834." },
+    { text: "Juan cometió un accidente de tránsito, el accidentado fue trasladado al hospital, pero allí contagió coronavirus y se produjo su fallecimiento. El responsable por el ilícito deberá responder:", options: ["Por las consecuencias inmediatas, mediatas, y casuales", "Por las consecuencias inmediatas y casuales", "Por las consecuencias mediatas y eventuales", "Por las consecuencias casuales y futuras", "Por las consecuencias inmediatas y mediatas"], correct: 4, explanation: "En los actos culposos (accidente de tránsito sin dolo), el responsable solo responde por consecuencias inmediatas y mediatas previsibles. El contagio de COVID en el hospital es una consecuencia casual e imprevisible, por lo que no es atribuible (Art. 1856)." },
+    { text: "Juan vendió su automóvil por escritura pública a Pedro, pero el Notario olvidó poner el precio de venta en el cuerpo de la escritura entonces, se escribió entre líneas poniendo el precio, pero esta circunstancia no fue salvada al final de la escritura. Estamos ante un instrumento público:", options: ["Nulo", "Nulo de nulidad relativa", "Instrumento público rescindible", "Instrumento público formal y de nulidad absoluta", "Instrumento público anulable"], correct: 4, explanation: "Las enmiendas, palabras entre líneas o borraduras no salvadas antes de las firmas son causal de anulabilidad del instrumento público (Art. 378 CC)." },
+    { text: "Pedro como propietario de una bodega, mediante un acto jurídico se obligó a no vender vino tinto Malbec de todas las marcas a pedido de sus competidores. El objeto de este acto jurídico es:", options: ["La utilidad obtenida con la abstención", "La no realización de la venta", "El comportamiento negativo del deudor", "La no venta del vino malbec", "Ninguna de las anteriores"], correct: 2, explanation: "El objeto del acto es la prestación de no hacer, es decir, la conducta de abstención (no vender vino Malbec), que recae sobre el comportamiento negativo del deudor." },
+    { text: "Juan adquirió un establecimiento ganadero en el Chaco, pero la Escritura Pública, a pesar de contar con las firmas de las partes, no cuenta con la firma del notario público. Este es un acto:", options: ["de formalidad ad solemnitatem o solemne, por dicha razón la falta de la firma anula el acto", "es un acto no formal por dicha razón tiene el mismo valor que la escritura pública", "es un acto formal no solemne, de formalidad ad probationem", "es un acto formal de formalidad insuperable", "ninguna de las anteriores"], correct: 0, explanation: "La escritura pública es un acto solemne; la falta de firma del notario anula el instrumento porque la forma es un requisito de validez del acto mismo (ad solemnitatem)." },
+    { text: "Los instrumentos privados se caracterizan, de carecer de la presunción de autenticidad y carecer de fecha cierta, solo puede adquirir fecha cierta con relación a los terceros y sucesores a título singular en el caso siguiente:", options: ["la de su exhibición en juicio o en la repartición pública, cuando allí quedase archivado", "la de autenticación o certificación de un escribano", "la transcripción en cualquier registro público", "del fallecimiento o la imposibilidad física permanente para escribir de quién firmó o extendió el instrumento", "todas son correctas"], correct: 4, explanation: "Los instrumentos privados adquieren fecha cierta por: exhibición en juicio, autenticación por escribano, transcripción en registro público, o fallecimiento/imposibilidad física del firmante (Art. 408)." },
+    { text: "La ley 4017-2010 de la validez jurídica de la firma electrónica y digital, establece los principios que rigen las comunicaciones electrónicas:", options: ["Neutralidad tecnológica, intemporabilidad e interpretación funcional", "Neutralidad tecnológica, interpretación funcional e interpretación en favor del consumidor", "Intemporabilidad, privilegio e interpretación en favor del consumidor", "Neutralidad tecnológica, privilegio e intemporabilidad"], correct: 0, explanation: "Estos son los principios establecidos en la Ley 4017/2010 que rigen las comunicaciones electrónicas." },
+    { text: "El uso de la firma digital se excluye de:", options: ["Disposiciones de última voluntad, actos jurídicos de derecho de familia, actos que requieran formalizar una Escritura Pública", "Actos jurídicos celebrados entre presentes, actos jurídicos de derecho de familia que requieran formalizar por Escritura Pública", "Actos jurídicos celebrados entre presentes, actos jurídicos de derechos reales, actos que requieran formalizar por Escritura Pública", "Actos jurídicos de derechos reales, actos que requieran formalizar por Escritura Pública, actos jurídicos de derechos personales", "Ninguna de las anteriores"], correct: 0, explanation: "Estas son las exclusiones expresas del uso de firma digital conforme a la Ley 6822/21." },
+    { text: "El principio de la relatividad de los actos jurídicos impone que los efectos de los actos deben limitarse a las partes y no podrán afectar a los demás, pero reconoce las siguientes excepciones:", options: ["Los sucesores universales, los acreedores quirografarios y los terceros beneficiarios", "Los sucesores a título singular, los terceros beneficiarios y los acreedores", "Los terceros beneficiados, los acreedores hipotecarios y prendarios y los sucesores universales", "Los acreedores privilegiados, los sucesores singulares y los terceros beneficiados", "Ninguna de las anteriores"], correct: 0, explanation: "Estas son las excepciones al principio de relatividad de los efectos de los actos jurídicos reconocidas." },
+    { text: "Juan celebró un contrato de compraventa con Pedro, sobre un inmueble situado en Asunción. Se concluyó con la siguiente cláusula: Si el Club Libertad obtuviera el título de Campeón de América en el próximo certamen, la venta quedará sin efecto y el derecho de Pedro se extinguirá. El caso es:", options: ["Plazo resolutorio", "Transmisión con cargo", "Condición suspensiva", "Condición imposible", "ninguna es correcta (condición resolutoria)"], correct: 4, explanation: "Se trata de una condición resolutoria: el derecho de Pedro ya nació (la venta se perfeccionó), pero se extinguirá si el Club Libertad gana el campeonato. Es un acontecimiento futuro e incierto que resuelve los efectos del acto." },
+    { text: "El señor Pedro es adinerado y tiene una hija muy bonita, entonces ofrece al novio de la niña un apartamento que posee en uno de sus edificios, con la condición de que contraiga matrimonio con la hija. Estamos ante una condición:", options: ["Suspensiva", "Resolutoria", "Especialmente prohibida", "Inmoral", "Imposible"], correct: 0, explanation: "El derecho (recibir el apartamento) queda subordinado al acontecimiento futuro e incierto de que contraiga matrimonio con la hija. Además, conforme al Art. 319 inc. c), está permitida la condición de contraer matrimonio en general." },
+    { text: "Pedro adquirió un televisor a 12 cuotas iguales. En la cláusula dice: la falta de pago de dos cuotas consecutivas hará exigible la totalidad de la obligación. Estamos ante un:", options: ["Plazo suspensivo", "Plazo resolutorio", "Plazo tácito", "Caducidad del plazo", "Ninguna de las anteriores"], correct: 3, explanation: "La cláusula que hace exigible la totalidad ante la falta de pago de dos cuotas es un ejemplo típico de caducidad del plazo: el deudor pierde el beneficio del tiempo restante y la deuda se vuelve exigible de inmediato." }
+  ]
+},
+
+// ── EJERCITARIO 4 (53 preguntas) ──
+{
+  name: "Ejercitario 4",
+  full: "Fuentes, Obligaciones y Responsabilidad Civil",
+  questions: [
+    { text: "Las principales fuentes del Código Civil Paraguayo son:", options: ["el Código Civil Brasileño;", "el Código Civil Chileno de Andrés Bello, el Código Civil Italiano de 1942 y de Autry et Rau;", "Código Civil Argentino de Vélez, Código Civil Alemán y Código Civil de México;", "el Derecho Español, el proyecto de Juan Antonio Bibiloni, la doctrina de Mesineo y Ascarelli,", "Código Civil Argentino de Vélez, el esbozo de Freitas, el Código Civil italiano, el Código Civil Alemán, la doctrina de Aubry et tau, de Messineo y Ascarelli;", "ninguna de las anteriores"], correct: 4, explanation: "Las fuentes del Código Civil Paraguayo son principalmente el CC Argentino de Vélez Sarsfield, el Esbozo de Freitas, el CC Italiano, el CC Alemán, y la doctrina de Aubry et Rau, Messineo y Ascarelli." },
+    { text: "El hecho jurídico es:", options: ["es la hipótesis prevista por la norma jurídica o conjunto de presupuestos previstos por la ley;", "es el esquema abstracto previsto por la Ley;", "es el acontecimiento o suceso que produce efecto jurídico, de crear, modificar o extinguir derechos;", "es el derecho mismo que actúa en virtud a algún acontecimiento;", "ninguna de las anteriores"], correct: 2, explanation: "El hecho jurídico es todo acontecimiento que produce efectos jurídicos (crear, modificar o extinguir derechos u obligaciones)." },
+    { text: "Los hechos involuntarios son aquellos:", options: ["únicamente los realizados por los agentes que no cumplieron 14 años de edad;", "únicamente los realizados por agentes con trastorno mental;", "únicamente los realizados por personas sujetas a interdicción;", "únicamente los viciados por error o dolo;", "ninguna de las anteriores es correcta"], correct: 4, explanation: "Los hechos involuntarios son aquellos en los que falta cualquiera de los elementos de la voluntad (discernimiento, intención, libertad o manifestación), no solo uno de ellos aisladamente." },
+    { text: "Para que un acto sea considerado voluntario deberá reunir los siguientes elementos:", options: ["Discernimiento, intención y capacidad;", "capacidad, discernimiento y manifestación;", "discernimiento, capacidad y libertad;", "discernimiento, intención, libertad y manifestación;", "ninguna de las anteriores."], correct: 3, explanation: "Los cuatro elementos necesarios para que un acto sea voluntario (Art. 277 y 279)." },
+    { text: "La declaración positiva de la voluntad son aquellas que se manifieste:", options: ["verbalmente o por escrito;", "por escritura pública o por instrumentos privados;", "verbalmente, por escrito o por signos inequívocos;", "verbalmente, por escritura pública o por instrumentos privados,", "ninguna de las anteriores"], correct: 2, explanation: "Las tres formas de declaración positiva de la voluntad (Art. 281)." },
+    { text: "La ilicitud en nuestro derecho positivo se da con los siguientes requisitos:", options: ["que fueren prohibidos por las leyes, hubieren causado daño, relación causal;", "hubieren causado daño, dolo o culpa del agente y relación causal;", "que fueren prohibidos por las leyes, hubieren causado daño o produjeren hechos exterior capaz de ocasionarlo, dolo o culpa del agente;", "daño, dolo o culpa y relación causal;", "ninguna de las anteriores"], correct: 2, explanation: "Requisitos del ilícito civil según el Art. 1834." },
+    { text: "La ilicitud objetiva se da cuando:", options: ["un agente plenamente capaz ocasiona un ilícito y daño a su semejante;", "cuando un representante de un incapaz comete un hecho ilícito;", "cuando un incapaz por trastorno mental o menor de 14 años comete un acto ilícito, pero no incurren en responsabilidad;", "cuando un agente sin intención comete un ilícito;", "ninguna de las anteriores"], correct: 4, explanation: "La ilicitud objetiva o genérica es toda transgresión al ordenamiento jurídico sin considerar al sujeto que la comete, sin importar quién lo hizo ni su intención. Las opciones describen situaciones subjetivas o de responsabilidad, no la definición correcta." },
+    { text: "En el derecho público los actos pueden realizarse cuando:", options: ["el acto no está prohibido por la ley y los funcionarios en general, en consecuencia, pueden ejecutar cualquier acto jurídico;", "cuando el acto al no estar prohibido está permitido;", "solamente los expresamente autorizados, caso contrario cometería una ilicitud;", "los autorizados y no autorizados;", "ninguna de las anteriores"], correct: 2, explanation: "En el derecho público rige el principio de legalidad rigurosa: todo lo que no está expresamente permitido está prohibido para los órganos del Estado." },
+    { text: "Luego de un encuentro deportivo entre el club Olimpia y Cerro Porteño, un fanático olimpista luego de una acalorada discusión, propinó severos golpes al cerrista. Esta responsabilidad por el hecho ilícito es:", options: ["una responsabilidad objetiva donde debe estudiarse objetivamente la gravedad de las lesiones;", "una responsabilidad sin culpa, porque no es culpa del autor el resultado de partido de futbol;", "una responsabilidad por riesgo creado, porque siempre un partido de futbol acarrea riesgo;", "una responsabilidad subjetiva donde se estudiará dolo o culpa;", "ninguna de las anteriores"], correct: 3, explanation: "El fanático actuó voluntariamente con discernimiento, intención y libertad, por lo que se analiza su conducta (dolo en los golpes)." },
+    { text: "Un ex presidente de la República decidió dedicarse al comercio e instaló una estación de servicio, pero para su mala suerte el líquido inflamable o combustible explotó y afectó a un sinnúmero de personas, del vecindario. Esta responsabilidad es:", options: ["subjetiva porque el sujeto no cuidó de estación;", "es una responsabilidad por hecho ajeno;", "es una responsabilidad por dolo", "es responsabilidad objetiva por riesgo creado;", "ninguna de las anteriores"], correct: 3, explanation: "El combustible es una actividad o cosa riesgosa que genera responsabilidad objetiva independientemente de la culpa del dueño (Art. 1846)." },
+    { text: "Pedro un escultor de gran renombre, es contratado por Juan para realizar una escultura de hielo. En un principio, Pedro había aceptado el trato e incluso había cobrado por ello. Sin embargo, luego de una semana Pedro le manifiesta a Juan que no tiene intenciones de realizar ninguna escultura y que además, ya no cuenta con el dinero que Juan le había entregado. En este caso, ¿Puede Juan obligar al cumplimiento de la obligación a Pedro? ¿Qué acción puede iniciar?", options: ["Si, puesto que el contrato es ley para las partes, por tanto Juan podrá exigir el cumplimiento de lo pactado. La acción a iniciar sería cumplimiento de contrato.", "No, en obligaciones de carácter intuitu personae no cabe el cumplimiento forzado por la naturaleza misma del objeto del contrato. La acción a iniciar sería indemnización de daños y perjuicios", "No, porque nadie puede obligar a la otra parte bajo ningún concepto. Podría iniciar la acción de repetición de lo pagado."], correct: 1, explanation: "En obligaciones intuitu personae (la escultura fue contratada por las cualidades personales del escultor) no cabe el cumplimiento forzado. La acción a iniciar es indemnización de daños y perjuicios." },
+    { text: "Clovis celebra un contrato de compraventa de granos de soja con una empresa multinacional. Al momento de la firma del contrato, Clovis se compromete a entregar todo lo sembrado en la temporada 2021, sin embargo, no se determina aún el precio a pagar por ellas, ya que las partes deciden que este será fijado por Clovis en el futuro, atendiendo al valor determinado por la Bolsa de Chicago, correspondiente al día de la fijación. En este caso, el objeto se considera:", options: ["Determinado", "Determinable", "Indeterminado"], correct: 1, explanation: "El precio no está fijado aún, pero es determinable porque existe un criterio objetivo para fijarlo (el valor de la Bolsa de Chicago al día de la fijación), sin necesidad de un nuevo acuerdo entre partes." },
+    { text: "Para refugiarse de una fuerte tormenta huracanada, Pablo rompe la puerta de una panadería y se refugia en la misma. Si no se refugiaba, lo más probable hubiese sido que se lesione gravemente. Si su actuar no se considera ilícito, ¿bajo qué causal de exoneración se encuadra su actuar?", options: ["Legítima defensa", "Estado de necesidad", "Autoayuda"], correct: 1, explanation: "Pablo causó un daño (romper la puerta) para evitar un mal mayor (lesionarse gravemente). El estado de necesidad es una causal de exoneración de responsabilidad." },
+    { text: "Pedro prestó a Juan la suma de US$ 30.000 para la compra de un vehículo por el plazo de tres meses. Transcurridos los tres meses, Juan le manifiesta a Pedro que aún no cuenta con el dinero suficiente, y que solo podrá abonar la suma de US$ 15.000. José, quien acompañaba a Juan, le manifestó a Pedro que él pagaría los US$ 15.000 restantes, a fin de que Juan quede liberado de su obligación. ¿Es válido el pago que José pretende realizar en nombre de Juan?", options: ["No, en atención a que el préstamo fue realizado a Juan y no a José", "Sí, puesto que, al tratarse de una obligación de dar suma de dinero, el cumplimiento de la obligación es directo, pese a ser realizado por un tercero.", "La validez del pago queda exclusivamente a criterio del deudor original"], correct: 1, explanation: "Al tratarse de una obligación de dar suma de dinero (no intuitu personae), el cumplimiento por un tercero es válido. El acreedor no puede rechazar el pago que libera al deudor, independientemente de quién lo realice." },
+    { text: "Juan se compromete a preparar 15 parrillas de hierro para venderlas a Rafael que se encargará de su posterior venta. Las parrillas debían ser entregadas el 12 de mayo, según acuerdo de las partes. El 12 de mayo, Juan va hasta el domicilio de Rafael con las 15 parrillas y Rafael se niega a recibirlas por no tener espacio suficiente para su almacenamiento. Juan se ve obligado a alquilar un depósito por 30 días, hasta que Rafael finalmente recibió las parrillas. ¿Qué puede hacer Juan?", options: ["Rafael está en mora, por lo que deberá indemnizar a Juan por la custodia de las parrillas.", "Nada, Juan está en su obligación de custodiar las parrillas hasta que Rafael quiera recibirlas, pues él es el vendedor de las mismas y se tiene que hacer cargo.", "Hay mora del deudor, por lo que Juan debe hacerse cargo."], correct: 0, explanation: "Rafael se negó injustificadamente a recibir las parrillas en el plazo y lugar pactados, configurando mora del acreedor. Por ello debe indemnizar a Juan por los gastos de custodia." },
+    { text: "Jaime debe pagar la indemnización establecida en una cláusula penal. ¿Cuál sería la causa fuente de esta obligación de indemnizar?", options: ["Un contrato", "La ley", "Promesa unilateral"], correct: 0, explanation: "La cláusula penal es una estipulación accesoria dentro de un contrato, por lo que la fuente de la obligación de indemnizar es el propio contrato donde se pactó." },
+    { text: "Aquel sujeto a favor del cual se realiza la prestación es conocido como:", options: ["Sujeto activo o acreedor", "Sujeto pasivo o deudor", "Tercero"], correct: 0, explanation: "El sujeto a cuyo favor se realiza la prestación es el acreedor (sujeto activo de la relación obligacional)." },
+    { text: "Camila, quien se encontraba volviendo a su casa luego de una larga jornada laboral, protagonizó un accidente automovilístico. Dicho accidente se produjo a raíz de que Camila cruzó de manera distraída una importante avenida con semáforo en rojo. Como consecuencia del accidente, el conductor que fue investido por Camila, quedó con graves heridas en el cuerpo y su vehículo quedó prácticamente inservible. ¿Qué tipo de acción podría iniciar el conductor en contra de Camila para obtener la reparación de los daños?", options: ["La acción que el conductor puede iniciar es indemnización de daños y perjuicios por responsabilidad extracontractual. Los conceptos a ser reclamados son: Daño emergente y daño moral.", "La acción que el conductor puede iniciar es de Indemnización de daños y perjuicios por responsabilidad contractual. Los conceptos a ser reclamados son: Daño emergente, lucro cesante y daño moral.", "La acción que el conductor puede iniciar es de Indemnización de daños y perjuicios por responsabilidad extracontractual. Los conceptos a ser reclamados dependen de las pruebas que se puedan presentar, por el momento se reclamaría solamente daño emergente."], correct: 0, explanation: "No hay vínculo contractual previo entre Camila y el conductor, por lo que la responsabilidad es extracontractual." },
+    { text: "Pedro ha comprado a Juan un televisor. Luego de abonar el monto correspondiente, Juan se niega a hacer entrega del televisor. ¿Puede Pedro exigir legalmente a Juan que le entregue la cosa comprada?", options: ["Sí, porque se trata de una obligación de dar y la misma es coercible.", "Sí, porque se trata de una obligación de hacer, por tanto Pedro puede exigir que realice el acto de entrega.", "No, porque nadie puede obligar a la otra parte bajo ningún concepto"], correct: 0, explanation: "La obligación de dar cosa cierta (entregar el televisor) es coercible; Pedro puede exigir judicialmente la entrega de la cosa comprada." },
+    { text: "José es chofer de la línea 30. En el ejercicio de sus funciones, José pasa en rojo y choca contra el automóvil de Lucas. Lucas, muy enojado, inicia el reclamo tanto en contra de José como en contra de la empresa propietaria de la línea 30. ¿Es correcta la acción que plantea Lucas?", options: ["No, porque José fue quien cometió el acto ilícito y es solamente él quien debe responsabilizarse de los daños.", "No, porque si bien José fue quien chocó contra el automóvil de Lucas, lo hizo trabajando, por lo que es la empresa de la Línea 30 quien debe responder por los daños causados a Lucas.", "Sí, porque José cometió el acto ilícito actuando bajo la dependencia de la Línea 30, por lo que José es responsable por su hecho propio, y la Línea 30 es responsable por hecho ajeno."], correct: 2, explanation: "José es responsable por su hecho propio (ilícito directo) y la Línea 30 es responsable por hecho ajeno (responsabilidad refleja), ya que José actuaba bajo su dependencia (Art. 1842)." },
+    { text: "La farmacéutica Cofarm S.A. cuenta con un área de desperdicios químicos, por lo que el ingreso a dicha área sin el recaudo de bioseguridad está prohibido ya que puede ser dañino para la salud. Esta advertencia se encuentra por toda el área y la empresa misma realiza siempre capacitaciones sobre bioseguridad. Carlos, ignorando todas las advertencias ingresa al área sin cumplir con las precauciones y se clava con una jeringa, contrayendo una infección bacteriana que lo deja sin poder trabajar por dos meses. ¿Tiene razón Carlos al demandar a Cofarm?", options: ["No, porque el perjuicio fue ocasionado exclusivamente por culpa de Carlos, la víctima.", "Sí, porque aunque el perjuicio haya sido ocasionado por culpa de Carlos, la farmacéutica es una actividad que crea un peligro por su naturaleza misma y debe responder por todo el daño que cause.", "No, porque en el contrato laboral de Carlos se establece que la farmacéutica no se hará responsable por ningún daño que pueda ocurrirle a Carlos."], correct: 0, explanation: "El perjuicio fue ocasionado exclusivamente por culpa de la víctima (Carlos ignoró todas las advertencias), lo que exime de responsabilidad a Cofarm (Art. 1846)." },
+    { text: "Segismundo y Astolfo celebran un contrato mediante el cual el primero vende sustancias cuya circulación se encuentra prohibida por la legislación nacional, a favor del segundo. En este caso, el objeto se considera:", options: ["Determinable", "Determinado", "Ilícito"], correct: 2, explanation: "Las sustancias cuya circulación está prohibida por ley están fuera del comercio; el objeto del contrato es ilícito y el acto es nulo de nulidad absoluta (Art. 299)." },
+    { text: "Axel le compra a Nicolás un cuadro por 300 millones de guaraníes, el cual tiene una cláusula penal en caso de retardo en el cumplimiento. Axel, en lugar de entregar la obra de arte el 10 de julio, lo hace el 25 de julio. Nicolás reclama el monto estipulado en la cláusula penal, de 300 millones por los 15 días. Axel acepta que incumplió el contrato, pero se niega a pagar los 300 millones, expresando que es abusiva esa cláusula penal. ¿El juez puede disminuir el monto pactado en la cláusula penal?", options: ["No. Debe primar la autonomía de la voluntad libremente expresada por las partes en el contrato.", "No. El monto de la cláusula penal no es excesivo, dado que es igual al monto de la obra.", "Sí, el monto de la cláusula penal es manifiestamente excesivo."], correct: 2, explanation: "El juez puede disminuir el monto de la cláusula penal cuando es manifiestamente excesivo en relación con el daño real causado, aun cuando fue libremente pactada por las partes." },
+    { text: "Pedro esta obligado a pagar a favor de Juan la suma de Gs. 50.000.000 en cuotas, en un plazo de 5 años. En esta relación obligacional, Pedro es:", options: ["El sujeto pasivo", "El sujeto activo", "Un tercero"], correct: 0, explanation: "Pedro es el deudor, quien tiene la obligación de pagar; el sujeto pasivo es el deudor en la relación obligacional." },
+    { text: "Jaime tiene un vecino con el cual comparten obligaciones de cuidado por un muro medianero, pero Juan vende el inmueble a Pedro. Ya formalizada la venta del inmueble, el vecino llama a Jaime a exigir la reparación del muro en la parte que le corresponde, pero Jaime se desentiende de ese reclamo porque el inmueble ya no es de su propiedad. ¿Es correcto este desentendimiento por parte de Jaime? Si es así, ¿por qué?", options: ["Sí es correcto porque al ser Pedro el nuevo propietario del inmueble es él quien debe ocuparse del mantenimiento del muro por ser una obligación propter rem.", "Si es correcto porque al ser Pedro el nuevo propietario del inmueble es él quien debe ocuparse del mantenimiento del muro por ser una obligación solidaria", "No es correcto porque tanto Jaime como Pedro deben ocuparse del mantenimiento del muro por ser una obligación solidaria"], correct: 0, explanation: "La obligación de mantenimiento del muro es una obligación propter rem (ambulatoria), que se transmite automáticamente con la titularidad del inmueble. Al vender, Pedro asume la obligación y Jaime queda liberado." },
+    { text: "Juan tiene una estancia con ganado vacuno. Su estancia da directamente a la ruta, que tiene mucho tránsito. Una fuerte tormenta totalmente imprevista daña el corral y las vacas alteradas logran escapar, llegando a la ruta y provocando un accidente. ¿Es Juan responsable ante los accidentados?", options: ["Sí, porque Juan es el propietario de los animales que ocasionaron el daño y por imperio de la ley debe responder.", "No, porque si bien Juan es el propietario de las vacas, el escape de las mismas se debió a un caso fortuito, por lo que está exento de responsabilidad.", "No, porque Juan no cometió ningún acto ilícito y por ende no se cumplen con los presupuestos del daño."], correct: 1, explanation: "El escape de las vacas se debió a una tormenta totalmente imprevista, lo que configura caso fortuito. El caso fortuito es causal de exoneración de responsabilidad objetiva (Art. 1846)." },
+    { text: "Juan es un adolescente de 16 años. Juan firma un pagaré con Jaime, por el cual se compromete al pago de Gs 1.000.000 a Jaime el 10 de agosto de 2020. Esta obligación es:", options: ["De nulidad absoluta", "De nulidad relativa", "Válida"], correct: 1, explanation: "Juan tiene 16 años, es menor de edad pero mayor de 14, por lo que tiene incapacidad de hecho relativa. Sus actos son anulables (nulidad relativa), no absolutamente nulos." },
+    { text: "Juan no cumple con la obligación de hacer pactada con María. En este caso María puede:", options: ["Hacer ejecutar la obligación por un tercero a costa del Juan", "Demandar a Juan por los daños y perjuicios derivados de su incumplimiento", "Todas las anteriores"], correct: 2, explanation: "Ante el incumplimiento de una obligación de hacer, el acreedor puede hacer ejecutar la obligación por un tercero a costa del deudor, o demandar daños y perjuicios, o ambas cosas." },
+    { text: "Pedro pagó a Juan, y éste lo aceptó, la suma de Gs 1.000.000 para que le hiciera ganar un sorteo organizado por el negocio en el cual Juan trabaja. Sin embargo, fue otro el afortunado ganador del sorteo. ¿Podría Pedro reclamar judicialmente el cobro de Gs 1.000.000 por no haber cumplido Juan su palabra?", options: ["Sí, puesto que la condición para el pago de los 1.000.000 Gs. era que Pedro gane el sorteo. Al no haberse cumplido con dicha condición, el pago no era procedente.", "No, puesto que la ley no puede apoyar el cumplimiento de lo que va en contra de ella, la moral y/o las buenas costumbres.", "No, puesto que no realizaron el acuerdo por contrato privado."], correct: 1, explanation: "El acuerdo tenía un objeto ilícito (manipular un sorteo, lo cual es contrario a la ley y a la moral). La ley no ampara el reclamo de prestaciones derivadas de actos ilícitos o inmorales." },
+    { text: "Juan y Pedro firman un contrato por el cual Pedro se compromete a regalar su casa a Juan con la condición de que Juan nunca contraiga nupcias con Ana.", options: ["Este contrato es válido", "Este contrato es nulo", "Este contrato es anulable"], correct: 1, explanation: "La condición de no casarse con persona determinada está expresamente prohibida por el Art. 319 inc. d), lo que anula el acto jurídico." },
+    { text: "La responsabilidad por hecho ajeno, también llamada responsabilidad refleja, incluye los actos ilícitos ocasionados por quienes se encuentran bajo la dependencia de otra persona. Indique cuál es el factor de atribución de la citada responsabilidad refleja:", options: ["la apariencia y la confianza", "el abuso del derecho", "el riesgo creado con una actividad o profesión", "el deber de garantía", "ninguna de las opciones anteriores es válida"], correct: 3, explanation: "La responsabilidad refleja se funda en que quienes tienen a otras personas bajo su dependencia o cuidado garantizan frente a terceros el comportamiento de estas." },
+    { text: "Pedro recurrió a una escribanía a fin de protocolizar su contrato privado de compra de vehículo realizado a Juan. Para que el instrumento privado sea oponible a terceros y sucesores a título singular, se requiere:", options: ["El cumplimiento del acto por al menos una de las partes", "El reconocimiento de la firma judicial o extrajudicial", "Fecha cierta", "Firma y doble ejemplar"], correct: 2, explanation: "Para que el instrumento privado sea oponible a terceros y sucesores a título singular, debe contar con fecha cierta (Art. 408), que puede adquirirse por los medios previstos en el CC." },
+    { text: "Cuando la Ley exige para la validez acto jurídico una forma determinada donde la forma y el contenido resulta inseparable, nos encontramos ante:", options: ["Un acto jurídico, formal", "Un acto jurídico no formal", "Un acto jurídico formal solemne", "Un acto jurídico formal no solemne", "Un elemento contingente de los actos jurídicos"], correct: 2, explanation: "Cuando la forma y el contenido son inseparables y la ley exige una forma determinada bajo pena de nulidad, se trata de un acto solemne (ad solemnitatem)." },
+    { text: "Un acto se juzgará ejecutado sin discernimiento:", options: ["Si lo realizare una persona de 16 años, pues aún no alcanzó la mayoría de edad", "Si lo celebrare una persona sobre la cual la contraparte profirió injustas amenazas", "Cuando una de las partes, aprovechando la necesidad, ligereza o inexperiencia de la otra, obtiene una ventaja injustificada y desproporcionada en virtud del acto jurídico", "Cuando una persona, creyendo que iba a encomendar una obra a un pintor muy renombrado en el ámbito artístico, incurre en un error que lo lleva a contratar a un pintor aficionado del mismo nombre que el pintor", "Ninguna de las opciones anteriores es válida"], correct: 4, explanation: "El Art. 278 establece taxativamente que se juzgan ejecutados sin discernimiento: los menores de 14 años, quienes estén privados de razón por cualquier causa, y quienes estén sujetos a interdicción o inhabilitación. Ninguna de las opciones describe correctamente estas situaciones." },
+    { text: "Un litigante presentó en el juicio sucesorio de Pedro, un contrato de compraventa de inmueble suscripto por el fallecido, luego se probó mediante una pericia caligráfica que la firma le pertenece al occiso, a partir del reconocimiento judicial, hace plena prueba de:", options: ["Quien suscribió y sus sucesores universales", "el que suscribió y sus sucesores a título singular", "El que suscribió y los terceros", "El que suscribió, sucesores universales y sucesores a singular", "El que suscribió, sucesores universales, sucesores a título singular y los terceros"], correct: 0, explanation: "El instrumento privado reconocido hace plena prueba entre las partes que lo firmaron y sus sucesores universales, pero no contra terceros ni sucesores a título singular (Art. 407 y 408)." },
+    { text: "¿Qué valor atribuye nuestro Derecho privado al silencio como manifestación de voluntad?", options: ["Rige el aforismo romano qui tacet consentire, el que calla otorga", "tiene valor excepcional como manifestación de voluntad, únicamente para los casos expresamente previstos en la ley", "no tiene valor alguno porque nuestro derecho privado es garantista, por lo que se exige siempre que la voluntad se manifieste expresa y positivamente"], correct: 1, explanation: "El silencio de por sí no vale; solo tiene eficacia jurídica en los tres casos del Art. 282: deber legal de explicarse, relación con conducta anterior, o pacto contractual previo." },
+    { text: "Los elementos accidentales de los actos jurídicos son:", options: ["Sujetos, objeto, forma y causa", "Discernimiento, intención y manifestación exterior de la voluntad", "Plazo, condición, cargo", "La voluntariedad, la licitud, finalidad inmediata de producir consecuencias jurídicas", "Ninguna de las anteriores es correcta"], correct: 2, explanation: "Son los tres elementos accidentales de los actos jurídicos (Lección IX y X)." },
+    { text: "Según el art 343 CC podrán celebrarse por medio de representantes:", options: ["Los actos jurídicos entre vivos, las disposiciones de última voluntad y los actos jurídicos que versen sobre derechos de familia, siempre que expresamente la ley admita la interpretación", "Los actos jurídicos entre vivos y los actos jurídicos que versen sobre derechos de familia, siempre que expresamente la ley admita la interpretación", "Los actos jurídicos entre vivos, las disposiciones de última voluntad, pero en ningún caso los actos jurídicos que versen sobre derechos de familia, porque está interesado el orden público", "Actos jurídicos entre vivos, pero en ningún caso los actos los actos jurídicos que versen sobre derechos de familia porque está interesado el orden público", "Solamente los actos jurídicos entre vivos"], correct: 1, explanation: "Las disposiciones de última voluntad NO pueden celebrarse por representante (Art. 343)." },
+    { text: "Como consecuencia del embarazo de su primogénita, un acaudalado comerciante realiza una donación a favor de su nieto, días antes de la fecha de su nacimiento. Con respecto a la irrevocabilidad de la adquisición, el nacimiento es:", options: ["Un hecho jurídico", "Un acto voluntario", "Un acto jurídico", "Opciones a y c son correctas", "Ninguna opción es correcta"], correct: 0, explanation: "El nacimiento es un acontecimiento natural que produce consecuencias jurídicas (en este caso, la adquisición irrevocable de la donación) independientemente de la voluntad del sujeto." },
+    { text: "Conforme al art 282 del CC para considerar la existencia de una manifestación tácita o indirecta de la voluntad, se requieren los siguientes requisitos:", options: ["Que se pueda saber con certidumbre la existencia de la voluntad", "Que no se exija una declaración positiva de voluntad", "Que no exista una declaración expresa en sentido contrario", "Opciones a y c son correctas", "Todas las opciones son correctas"], correct: 4, explanation: "Para que exista manifestación tácita de la voluntad se requiere: certidumbre de la existencia de la voluntad, que no se exija declaración positiva, y que no exista declaración expresa en sentido contrario (Art. 282)." },
+    { text: "Toda información generada, enviada, recibida, archivada o comunicada por medios electrónicos, ópticos o similares, como ser el intercambio electrónico de datos, el correo electrónico, el telegrama, el télex o el telefax, se conoce con el nombre de:", options: ["Documento digital", "Firma electrónica", "Certificado digital", "Mensaje de datos", "B y c son válidas"], correct: 3, explanation: "Es toda información generada, enviada, recibida, archivada o comunicada por medios electrónicos, según la Ley 6822/21 y la Ley 4868/13." },
+    { text: "De acuerdo al Código Civil Paraguayo los instrumentos privados que contengan convenciones bilaterales deben redactarse en tantos ejemplares como partes con interés legítimo y ser firmados por dichas partes. ¿Cuál es la consecuencia jurídica en caso que un instrumento privado no reúna los mencionados requisitos?", options: ["La nulidad del contrato", "El contrato valdrá solo como principio de prueba por escrito", "El contrato no podrá probarse por medio de testigos", "Ninguna de las opciones anteriores es válida"], correct: 3, explanation: "El Art. 401 establece que la omisión de los requisitos de firma y doble ejemplar no invalida el acto en varios supuestos (cumplimiento de obligaciones, otras pruebas, depósito ante escribano, etc.). El contrato puede subsistir plenamente." },
+    { text: "Juanito de 15 años de edad, es hijo de Juan y María. Como estos están separados, el menor vive con la madre. Terminada la jornada escolar en un Colegio público y en la vereda del mismo. Juanito provoca daños materiales a terceros. ¿Quién responde por dichos daños?", options: ["El director del colegio porque el hecho dañoso se produjo en la vereda del mismo", "Juan y María, solidariamente porque son los padres de Juanito", "Juanito porque tiene discernimiento", "El Estado porque el Colegio es público", "Ninguna de las opciones es correcta"], correct: 1, explanation: "Los padres responden por los hechos ilícitos de sus hijos menores (responsabilidad refleja). El hecho ocurrió fuera del horario escolar y en la vereda, no dentro del establecimiento, por lo que no corresponde al director ni al Estado." },
+    { text: "Juan, Pedro y Miguel constituyeron una Sociedad Anónima denominada JUPEMI S.A de la cual son accionistas. Pedro fue designado presidente del directorio y en tal carácter realizó contrato de compraventa con la firma AMANECER CAMPESINO SRL. ¿En el mencionado acto jurídico, en qué carácter participó Pedro?", options: ["Parte y otorgante", "Otorgante", "Parte accionista", "Representante y otorgante", "Ninguna opción es correcta"], correct: 3, explanation: "Pedro firma el contrato (otorgante) actuando en nombre de JUPEMI S.A. (representante), pero no es parte del acto en nombre propio; la parte es la sociedad." },
+    { text: "Conforme a la Ley 4017-2020, la firma digital prueba:", options: ["que existió un notario autorizante", "que se ha suscrito de puño y letra", "que el mensaje proviene del remitente y que el contenido no ha sido adulterado", "que proviene de la misma máquina del emisor", "ninguna de las anteriores es correcta"], correct: 2, explanation: "La firma digital genera la presunción de autenticidad del remitente y de integridad del contenido (Ley 6822/21, Art. efectos de la firma digital)." },
+    { text: "El daño causado por un animal feroz:", options: ["será siempre imputable al dueño o guardián, salvo que el mismo demuestre que no le fue posible evitar el daño", "será siempre imputable al dueño o guardián, salvo que pruebe caso fortuito o culpa de la víctima", "será siempre imputable al dueño o guardián, aunque no le hubiese sido posible evitar el daño y aunque el animal se hubiere soltado sin culpa del dueño o guardián"], correct: 2, explanation: "El daño causado por animales feroces genera responsabilidad objetiva absoluta; no admite la excusa de la imposibilidad de evitarlo." },
+    { text: "Si en el texto de un instrumento público se observan palabras escritas entre líneas en uno de sus párrafos:", options: ["El instrumento es nulo", "el instrumento es anulable, salvo que los interlineados hayan sido salvados antes de insertarse las firmas respectivas", "el instrumento es válido, ya que existe un margen mismo de tolerancia de errores materiales", "el instrumento es anulable", "ninguna de las opciones anteriores es válida"], correct: 1, explanation: "Las enmiendas o palabras entre líneas no salvadas son causal de anulabilidad del instrumento público (Art. 378)." },
+    { text: "Un escribano extendió una Escritura Pública, que por la naturaleza del acto requería de la presencia de testigos. Posteriormente se acreditó que uno de ellos era incapaz. De conformidad a los requisitos de validez de dicho instrumento público, el mismo es:", options: ["es un instrumento público válido, puesto que el otro testigo era plenamente capaz", "no es válido como instrumento público, pero si lo es como instrumento privado, puesto que lo suscribieron las partes", "es un instrumento público anulable", "es un instrumento público nulo", "las opciones b y c son correctas"], correct: 2, explanation: "El error sobre la capacidad de los testigos que generalmente eran tenidos como capaces no anula automáticamente el acto, pero lo vuelve anulable. No es nulo de pleno derecho porque la ley reconoce el error relativo sobre la capacidad de los testigos (Art. 381)." },
+    { text: "El supuesto jurídico es:", options: ["acontecimiento natural o humano, es decir un suceso que se produce en el tiempo y en el espacio y que modifica la realidad existente", "todo acontecimiento susceptible de producir alguna adquisición, modificación, transferencia o extinción de los derechos u obligaciones", "una hipótesis prevista por la norma jurídica o un conjunto de presupuestos establecidos por la norma para que la misma adquiera funcionalidad."], correct: 2, explanation: "Definición del supuesto jurídico (Lección I, punto 2.2)." },
+    { text: "Los instrumentos privados se caracterizan, de carecer de la presunción de autenticidad y carecer de fecha cierta, solo puede adquirir fecha cierta con relación a los terceros y sucesores a título singular en el caso siguiente:", options: ["la de su exhibición en juicio o en la repartición pública, cuando allí quedase archivado", "la de autenticación o certificación de un escribano", "la transcripción en cualquier registro público", "del fallecimiento o la imposibilidad física permanente para escribir de quién firmó o extendió el instrumento", "todas son correctas"], correct: 4, explanation: "Los cuatro modos de adquirir fecha cierta están previstos en el CC: exhibición en juicio, autenticación por escribano, transcripción en registro público, y fallecimiento/imposibilidad del firmante (Art. 408)." },
+    { text: "La ley 4017-2010 de la validez jurídica de la firma electrónica y digital, establece los principios que rigen las comunicaciones electrónicas:", options: ["Neutralidad tecnológica, intemporabilidad e interpretación funcional", "Neutralidad tecnológica, interpretación funcional e interpretación en favor del consumidor", "Intemporabilidad, privilegio e interpretación en favor del consumidor", "Neutralidad tecnológica, privilegio e intemporabilidad"], correct: 0, explanation: "Principios de la Ley 4017/2010." },
+    { text: "El uso de la firma digital se excluye de:", options: ["Disposiciones de última voluntad, actos jurídicos de derecho de familia, actos que requieran formalizar una Escritura Pública", "Actos jurídicos celebrados entre presentes, actos jurídicos de derecho de familia que requieran formalizar por Escritura Pública", "Actos jurídicos celebrados entre presentes, actos jurídicos de derechos reales, actos que requieran formalizar por Escritura Pública", "Actos jurídicos de derecho reales, actos que requieran formalizar por Escritura Pública, actos jurídicos de derechos personales", "Ninguna de las anteriores"], correct: 0, explanation: "Exclusiones del uso de firma digital (Ley 6822/21)." },
+    { text: "Juan celebró un contrato de compraventa con Pedro, sobre un inmueble situado en Asunción, al celebrarse la transmisión de parte de Juan a Pedro, se concluyó con la siguiente cláusula: Si el Club Libertad obtuviera el título de Campeón de América en el próximo certamen, la venta quedará sin efecto y el derecho de Pedro se extinguirá. El caso es:", options: ["Plazo resolutorio", "Transmisión con cargo", "Condición suspensiva", "Condición imposible", "ninguna es correcta (condición resolutoria)"], correct: 4, explanation: "Es una condición resolutoria: la venta ya se perfeccionó (el derecho de Pedro nació), pero se extinguirá si se cumple el evento futuro e incierto (que Libertad gane el campeonato)." }
+  ]
+}
+
+];
+
+// ═══════════════════════════ STATE ═══════════════════════════
+let currentModule = null;
+let currentQuestion = 0;
+let correctCount = 0;
+let answeredCount = 0;
+let scores = [null, null, null, null];
+
+// ═══════════════════════════ FUNCTIONS ═══════════════════════════
+
+function updateMenuScores() {
+  scores.forEach((s, i) => {
+    const fill = document.getElementById('prog-' + i);
+    const text = document.getElementById('score-text-' + i);
+    if (s !== null) {
+      const pct = Math.round((s.correct / s.total) * 100);
+      fill.style.width = pct + '%';
+      text.textContent = s.correct + ' / ' + s.total + ' correctas (' + pct + '%)';
+    }
+  });
+}
+
+function startQuiz(moduleIndex) {
+  currentModule = moduleIndex;
+  currentQuestion = 0;
+  correctCount = 0;
+  answeredCount = 0;
+
+  const mod = modules[moduleIndex];
+  document.getElementById('q-total').textContent = mod.questions.length;
+  document.getElementById('header-sub').textContent = mod.name;
+  document.getElementById('live-score').style.display = 'flex';
+  updateLiveScore();
+
+  document.getElementById('menu-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const mod = modules[currentModule];
+  const q = mod.questions[currentQuestion];
+
+  document.getElementById('q-current').textContent = currentQuestion + 1;
+  document.getElementById('q-counter').textContent = 'Pregunta ' + (currentQuestion + 1);
+
+  const qText = document.getElementById('q-text');
+  qText.textContent = q.text;
+  qText.className = 'question-text' + (q.text.length > 250 ? ' long' : '');
+
+  const optList = document.getElementById('options-list');
+  optList.innerHTML = '';
+  const letters = ['a', 'b', 'c', 'd', 'e', 'f'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = '<span class="option-letter">' + letters[i] + '</span><span class="option-text">' + opt + '</span>';
+    btn.onclick = () => selectAnswer(i);
+    optList.appendChild(btn);
+  });
+
+  document.getElementById('feedback-area').innerHTML = '';
+  document.getElementById('btn-next').style.display = 'none';
+
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectAnswer(selectedIndex) {
+  const mod = modules[currentModule];
+  const q = mod.questions[currentQuestion];
+  const buttons = document.querySelectorAll('.option-btn');
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.correct) btn.classList.add('correct');
+    else if (i === selectedIndex) btn.classList.add('incorrect');
+    else btn.classList.add('dimmed');
+  });
+
+  const isCorrect = selectedIndex === q.correct;
+  if (isCorrect) correctCount++;
+  answeredCount++;
+
+  const feedbackArea = document.getElementById('feedback-area');
+  const tag = document.createElement('div');
+  tag.className = 'result-tag ' + (isCorrect ? 'correct-tag' : 'incorrect-tag');
+  tag.textContent = isCorrect ? '✓ ¡Correcto!' : '✗ Incorrecto';
+  feedbackArea.appendChild(tag);
+
+  const expBox = document.createElement('div');
+  expBox.className = 'explanation-box';
+  expBox.innerHTML = '<div class="explanation-label">📖 Explicación</div>' + q.explanation;
+  feedbackArea.appendChild(expBox);
+
+  const isLast = currentQuestion === mod.questions.length - 1;
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'block';
+  btnNext.textContent = isLast ? 'Ver resultados →' : 'Siguiente →';
+
+  updateLiveScore();
+}
+
+function nextQuestion() {
+  const mod = modules[currentModule];
+  if (currentQuestion < mod.questions.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function updateLiveScore() {
+  const mod = modules[currentModule];
+  const badge = document.getElementById('live-score');
+  badge.textContent = correctCount + ' / ' + mod.questions.length;
+  document.getElementById('q-correct-count').textContent = correctCount;
+}
+
+function updateProgress() {
+  const mod = modules[currentModule];
+  const pct = ((currentQuestion) / mod.questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function showResults() {
+  const mod = modules[currentModule];
+  const total = mod.questions.length;
+  const pct = Math.round((correctCount / total) * 100);
+
+  scores[currentModule] = { correct: correctCount, total: total };
+  updateMenuScores();
+
+  let emoji = '😔', title = 'Seguí practicando';
+  if (pct >= 90) { emoji = '🏆'; title = '¡Excelente resultado!'; }
+  else if (pct >= 75) { emoji = '🎉'; title = '¡Muy buen trabajo!'; }
+  else if (pct >= 60) { emoji = '👍'; title = '¡Buen intento!'; }
+
+  document.getElementById('results-emoji').textContent = emoji;
+  document.getElementById('results-title').textContent = title;
+  document.getElementById('results-module-name').textContent = mod.name + ' · ' + mod.full;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-detail').innerHTML = 'Respondiste correctamente <strong>' + correctCount + '</strong> de <strong>' + total + '</strong> preguntas.';
+
+  const circumference = 2 * Math.PI * 58; // 364.4
+  const offset = circumference - (pct / 100) * circumference;
+  const circle = document.getElementById('score-circle');
+  circle.style.strokeDashoffset = offset;
+  circle.style.stroke = pct >= 75 ? 'var(--correct)' : pct >= 50 ? 'var(--accent)' : 'var(--incorrect)';
+
+  document.getElementById('progress-fill').style.width = '100%';
+
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+}
+
+function retryQuiz() {
+  startQuiz(currentModule);
+}
+
+function goBack() {
+  if (confirm('¿Querés salir del cuestionario? Tu progreso actual se perderá.')) {
+    showMenu();
+  }
+}
+
+function showMenu() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('menu-screen').style.display = 'block';
+  document.getElementById('live-score').style.display = 'none';
+  document.getElementById('header-sub').textContent = 'SMGC';
+  document.getElementById('progress-fill').style.width = '0%';
+  updateMenuScores();
+}
+
+// Init
+updateMenuScores();
+</script>
+</body>
+</html>
